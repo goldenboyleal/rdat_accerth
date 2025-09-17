@@ -1,0 +1,225 @@
+/* Reset básico */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Estilos gerais do corpo */
+body {
+    font-family: 'Inter', 'Arial', sans-serif;
+    background-color: #f0f2f5;
+    min-height: 100vh;
+}
+
+/* Main Content */
+.main-content {
+    flex-grow: 1;
+    padding: 0;
+    background: linear-gradient(135deg, #e0e7ff 0%, #f0f2f5 100%);
+}
+
+/* Top Bar */
+.top-bar {
+    background: #ffffff;
+    padding: 1rem 2rem;
+    border-bottom: 1px solid #e5e7eb;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.top-bar-content {
+    display: flex;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    justify-content: space-between;
+}
+
+.top-bar-logo {
+    max-width: 120px;
+    height: auto;
+    margin-right: 1rem;
+}
+
+.top-bar-content h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1e3a8a;
+    flex-grow: 1;
+    text-align: center;
+    margin: 0;
+}
+
+.return-link {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #1e3a8a;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.return-link:hover {
+    background-color: #f1f5f9;
+    color: #1e40af;
+}
+
+/* Hero Image */
+.hero-image {
+    position: relative;
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+}
+
+.hero-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 20%;
+    display: block;
+}
+
+.hero-image::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 100px;
+    background: linear-gradient(to bottom, transparent, #f0f2f5);
+}
+
+/* Dúvidas Content */
+.duvidas-content {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: #ffffff;
+    border-radius: 16px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.duvidas-content h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #1e3a8a;
+    margin-bottom: 1rem;
+    margin-top: 1.5rem;
+}
+
+.duvidas-content p {
+    font-size: 1rem;
+    color: #374151;
+    line-height: 1.6;
+    margin-bottom: 0.75rem;
+}
+
+.duvidas-content p strong {
+    font-weight: 600;
+    color: #1f2937;
+}
+
+/* Notificações */
+.notification {
+    position: fixed;
+    top: 1rem;
+    right: 1rem;
+    background-color: #34d399;
+    color: #ffffff;
+    padding: 0.75rem 1rem;
+    border-radius: 10px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+    z-index: 2000;
+    max-width: 300px;
+}
+
+.notification.error {
+    background-color: #f87171;
+}
+
+.notification-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notification-close {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: #ffffff;
+    border: none;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.notification-close:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+.notification-close i {
+    font-size: 0.7rem;
+}
+
+.progress-bar {
+    height: 2px;
+    background-color: rgba(255, 255, 255, 0.3);
+    animation: progress 5s linear forwards;
+}
+
+@keyframes progress {
+    from { width: 100%; }
+    to { width: 0; }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .top-bar-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .top-bar-logo {
+        margin-bottom: 1rem;
+        max-width: 100px;
+        margin-right: 0;
+    }
+
+    .top-bar-content h1 {
+        text-align: left;
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .return-link {
+        align-self: flex-end;
+        font-size: 0.9rem;
+    }
+
+    .hero-image {
+        height: 200px;
+    }
+
+    .hero-image img {
+        object-position: center 30%;
+    }
+
+    .duvidas-content {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+
+    .duvidas-content h2 {
+        font-size: 1.3rem;
+    }
+
+    .duvidas-content p {
+        font-size: 0.9rem;
+    }
+}

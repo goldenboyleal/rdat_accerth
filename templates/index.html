@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal Accerth</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body class="bg-gray-100 font-sans">
+    <!-- Top Bar com Blur -->
+    <div class="fixed top-0 left-0 w-full z-10 bg-black bg-opacity-50 backdrop-blur-md py-4">
+        <div class="container mx-auto px-4 flex items-center justify-between">
+            <h1 class="text-white text-2xl font-bold">Portal Accerth</h1>
+            <nav>
+                <a href="https://portal.accerth.com/rdat" class="text-white hover:text-gray-300 mx-4">RDAT</a>
+                <span class="text-gray-400 mx-4 cursor-not-allowed">Accerth Suporte TI</span>
+            </nav>
+        </div>
+    </div>
+
+    <!-- Carrossel -->
+    <div class="relative w-full h-screen overflow-hidden">
+        <div class="carousel w-full h-full">
+            <div class="carousel-item active">
+                <img src="https://via.placeholder.com/1920x1080?text=RDAT+Imagem" alt="RDAT" class="w-full h-full object-cover">
+                <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40">
+                    <div class="text-center text-white">
+                        <h2 class="text-4xl md:text-5xl font-bold mb-4">RDAT</h2>
+                        <p class="text-xl md:text-2xl">Acesse o RDAT da Accerth e registre suas atividades</p>
+                    </div>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <img src="https://via.placeholder.com/1920x1080?text=Accerth+Suporte+TI+Imagem" alt="Accerth Suporte TI" class="w-full h-full object-cover">
+                <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40">
+                    <div class="text-center text-white">
+                        <h2 class="text-4xl md:text-5xl font-bold mb-4">Accerth Suporte TI</h2>
+                        <p class="text-xl md:text-2xl">Soluções para suas demandas relacionadas à TI</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Controles do Carrossel -->
+        <button class="carousel-control prev absolute top-1/2 left-4 transform -translate-y-1/2 bg-gray-800 bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75">&#10094;</button>
+        <button class="carousel-control next absolute top-1/2 right-4 transform -translate-y-1/2 bg-gray-800 bg-opacity-50 text-white p-2 rounded-full hover:bg-opacity-75">&#10095;</button>
+    </div>
+
+    <!-- Seção de Links -->
+    <div class="bg-white py-16">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12">Nossos Serviços</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="bg-gray-100 p-6 rounded-lg shadow-lg text-center">
+                    <h3 class="text-2xl font-semibold mb-4">RDAT</h3>
+                    <p class="text-gray-600 mb-6">Registre e gerencie suas atividades diárias com o RDAT da Accerth.</p>
+                    <a href="https://portal.accerth.com/rdat" class="inline-block bg-blue-600 text-white py-2 px-6 rounded hover:bg-blue-700">Acessar RDAT</a>
+                </div>
+                <div class="bg-gray-100 p-6 rounded-lg shadow-lg text-center">
+                    <h3 class="text-2xl font-semibold mb-4">Accerth Suporte TI</h3>
+                    <p class="text-gray-600 mb-6">Soluções completas para suas necessidades de TI (em breve).</p>
+                    <span class="inline-block bg-gray-400 text-white py-2 px-6 rounded cursor-not-allowed">Em Breve</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script do Carrossel -->
+    <script>
+        const carouselItems = document.querySelectorAll('.carousel-item');
+        const prevButton = document.querySelector('.carousel-control.prev');
+        const nextButton = document.querySelector('.carousel-control.next');
+        let currentIndex = 0;
+
+        function showSlide(index) {
+            carouselItems.forEach((item, i) => {
+                item.classList.toggle('active', i === index);
+            });
+        }
+
+        prevButton.addEventListener('click', () => {
+            currentIndex = (currentIndex - 1 + carouselItems.length) % carouselItems.length;
+            showSlide(currentIndex);
+        });
+
+        nextButton.addEventListener('click', () => {
+            currentIndex = (currentIndex + 1) % carouselItems.length;
+            showSlide(currentIndex);
+        });
+
+        // Auto-avanço do carrossel a cada 5 segundos
+        setInterval(() => {
+            currentIndex = (currentIndex + 1) % carouselItems.length;
+            showSlide(currentIndex);
+        }, 5000);
+
+        // Mostrar o primeiro slide
+        showSlide(currentIndex);
+    </script>
+</body>
+</html>

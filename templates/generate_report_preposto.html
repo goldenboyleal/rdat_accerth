@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerar Relatório Preposto</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='imagens/modelo-oficial-icon-accerth-removebg-preview (4).png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='generate_report_preposto.css') }}?v=1.3">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="{{ url_for('static', filename='imagens/logo-accerth-oficial.png') }}" alt="Accerth Logo" class="logo">
+            <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Alternar menu lateral">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <div class="sidebar-content">
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('home_preposto') }}" class="{% if request.endpoint == 'home_preposto' %}active{% endif %}" aria-label="Tela Inicial"><i class="fas fa-home"></i> Tela Inicial</a></li>
+                    <li class="collapsible {% if request.endpoint == 'generate_report_preposto' %}submenu-active{% endif %}">
+                        <a href="#" onclick="toggleSubmenu(this); return false;" aria-label="Expandir menu de relatórios"><i class="fas fa-file-alt"></i> Relatórios <i class="fas fa-chevron-right arrow"></i></a>
+                        <ul class="submenu">
+                            <li><a href="{{ url_for('generate_report_preposto') }}" class="{% if request.endpoint == 'generate_report_preposto' %}active{% endif %}" aria-label="Gerar Relatório"><i class="fas fa-file-alt"></i> Gerar Relatório</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="{{ url_for('digital_signature_preposto') }}" class="{% if request.endpoint == 'digital_signature_preposto' %}active{% endif %}" aria-label="Assinatura Digital"><i class="fas fa-signature"></i> Assinatura Digital</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="sidebar-footer">
+            <ul>
+                <li><a href="{{ url_for('duvidas') }}" class="footer-link" aria-label="Dúvidas"><i class="fas fa-question-circle"></i> Dúvidas</a></li>
+            </ul>
+        </div>
+    </aside>
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header>
+            <div class="header-content">
+                <span>Bem-vindo, {{ preposto_name }}! (Unidade: {{ unit }})</span>
+                <div class="header-right">
+                    <a href="{{ url_for('logout') }}" aria-label="Sair do sistema">Sair</a>
+                </div>
+            </div>
+        </header>
+        <!-- Section -->
+        <section class="section">
+            <h2>Gerar Relatório Preposto</h2>
+            <form method="POST" action="{{ url_for('generate_report_preposto') }}" class="report-form">
+                <div class="form-group">
+                    <label for="employee_filter">Funcionário</label>
+                    <select id="employee_filter" name="employee_id" aria-label="Selecionar funcionário">
+                        <option value="">Todos os funcionários</option>
+                        {% for employee in employees %}
+                            <option value="{{ employee.id }}">{{ employee.name }} (Matrícula: {{ employee.employer_code or 'N/A' }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="start_date">Data Início</label>
+                    <input type="date" id="start_date" name="start_date" required aria-label="Selecionar data de início">
+                </div>
+                <div class="form-group">
+                    <label for="end_date">Data Fim</label>
+                    <input type="date" id="end_date" name="end_date" required aria-label="Selecionar data de fim">
+                </div>
+                <div class="report-buttons">
+                    <button type="submit" name="format" value="excel" class="btn excel-btn" aria-label="Gerar relatório em Excel"><i class="fas fa-file-excel"></i> Gerar Relatório em Excel</button>
+                    <button type="submit" name="format" value="pdf" class="btn pdf-btn" aria-label="Gerar relatório em PDF"><i class="fas fa-file-pdf"></i> Gerar Relatório em PDF</button>
+                </div>
+            </form>
+        </section>
+    </div>
+    <!-- Notificações -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="notification {{ 'error' if category == 'error' else 'success' }}">
+                    <div class="notification-content">
+                        <span>{{ message }}</span>
+                        <button class="notification-close" onclick="this.parentElement.parentElement.remove()" aria-label="Fechar notificação">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="progress-bar"></div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+        }
+
+        function toggleSubmenu(element) {
+            const submenu = element.nextElementSibling;
+            const arrow = element.querySelector('.arrow');
+            element.parentElement.classList.toggle('submenu-active');
+            submenu.style.maxHeight = submenu.style.maxHeight ? null : submenu.scrollHeight + 'px';
+            arrow.style.transform = submenu.style.maxHeight ? 'rotate(90deg)' : 'rotate(0deg)';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const collapsible = document.querySelector('.collapsible');
+            const submenu = collapsible.querySelector('.submenu');
+            const arrow = collapsible.querySelector('.arrow');
+            if (collapsible.classList.contains('submenu-active')) {
+                submenu.style.maxHeight = submenu.scrollHeight + 'px';
+                arrow.style.transform = 'rotate(90deg)';
+            }
+
+            document.querySelectorAll('.progress-bar').forEach(bar => {
+                bar.addEventListener('animationend', () => {
+                    bar.closest('.notification').remove();
+                });
+            });
+        });
+
+        function showNotification(message, type = 'error') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <span>${message}</span>
+                    <button class="notification-close" onclick="this.parentElement.parentElement.remove()" aria-label="Fechar notificação">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="progress-bar"></div>
+            `;
+            document.body.appendChild(notification);
+            notification.querySelector('.progress-bar').addEventListener('animationend', () => {
+                notification.remove();
+            });
+        }
+    </script>
+</body>
+</html>

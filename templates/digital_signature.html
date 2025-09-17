@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assinatura Digital</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='imagens/modelo-oficial-icon-accerth-removebg-preview (4).png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='digital_signature.css') }}?v=2.8">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="{{ url_for('static', filename='imagens/logo-accerth-oficial.png') }}" alt="Accerth Logo" class="logo">
+            <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Alternar menu lateral">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <div class="sidebar-content">
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('home_funcionario') }}" class="{% if request.endpoint == 'home_funcionario' %}active{% endif %}" aria-label="Tela Inicial"><i class="fas fa-home"></i> Tela Inicial</a></li>
+                    <li><a href="{{ url_for('activities') }}" class="{% if request.endpoint == 'activities' %}active{% endif %}" aria-label="Atividades"><i class="fas fa-tasks"></i> Atividades</a></li>
+                    <li class="collapsible">
+                        <a href="#" onclick="toggleSubmenu(this); return false;" aria-label="Expandir menu de relatórios"><i class="fas fa-file-alt"></i> Relatórios <i class="fas fa-chevron-right arrow"></i></a>
+                        <ul class="submenu">
+                            <li><a href="{{ url_for('generate_report') }}" class="{% if request.endpoint == 'generate_report' %}active{% endif %}" aria-label="Gerar Relatório"><i class="fas fa-file-alt"></i> Gerar Relatório</a></li>
+                            <li>
+                                {% if session['role'] == 'colaborador' %}
+                                    <a href="{{ url_for('track_reports') }}" class="{% if request.endpoint == 'track_reports' %}active{% endif %}" aria-label="Acompanhar Relatórios"><i class="fas fa-search"></i> Acompanhar Relatórios</a>
+                                {% elif session['role'] == 'empregador' %}
+                                    <a href="{{ url_for('employer_reports') }}" class="{% if request.endpoint == 'employer_reports' %}active{% endif %}" aria-label="Relatórios"><i class="fas fa-search"></i> Relatórios</a>
+                                {% elif session['role'] == 'fiscal' %}
+                                    <a href="{{ url_for('generate_fiscal_report') }}" class="{% if request.endpoint == 'generate_fiscal_report' %}active{% endif %}" aria-label="Relatórios"><i class="fas fa-search"></i> Relatórios</a>
+                                {% endif %}
+                            </li>
+                            <li><a href="{{ url_for('signed_reports') }}" class="{% if request.endpoint == 'signed_reports' %}active{% endif %}" aria-label="Relatórios Assinados"><i class="fas fa-file-signature"></i> Relatórios Assinados</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="{{ url_for('digital_signature') }}" class="{% if request.endpoint == 'digital_signature' %}active{% endif %}" aria-label="Assinatura Digital"><i class="fas fa-signature"></i> Assinatura Digital</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="sidebar-footer">
+            <ul>
+                <li><a href="{{ url_for('faq') }}" class="footer-link" aria-label="Dúvidas"><i class="fas fa-question-circle"></i> Dúvidas?</a></li>
+            </ul>
+        </div>
+    </aside>
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header>
+            <div class="header-content">
+                <span>Bem-vindo, {{ employee_name }}!</span>
+                <div class="header-right">
+                    <a href="{{ url_for('logout') }}" aria-label="Sair do sistema">Sair</a>
+                </div>
+            </div>
+        </header>
+        <!-- Section -->
+        <section class="section">
+            <h2>Assinatura Digital</h2>
+            <div class="filters">
+                <div class="form-group">
+                    <label for="report-select">Selecione o Relatório</label>
+                    <select id="report-select" onchange="loadPDF()" aria-label="Selecionar relatório em PDF">
+                        <option value="">Selecione um relatório</option>
+                        {% for report in reports %}
+                            <option value="{{ report.file_path }}">{{ report.report_number }} - {{ report.created_at.strftime('%d/%m/%Y %H:%M') }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="pdf-container">
+                <canvas id="pdfCanvas" aria-label="Visualização do PDF"></canvas>
+            </div>
+            <div class="signature-options">
+                <button class="btn save-btn" onclick="signWithAdobe()" aria-label="Assinar com Adobe Sign"><i class="fas fa-signature"></i> Assinar com Adobe Sign</button>
+            </div>
+        </section>
+    </div>
+    <!-- Notificações -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="notification {{ 'error' if category == 'error' else 'success' }}">
+                    <div class="notification-content">
+                        <span>{{ message }}</span>
+                        <button class="notification-close" onclick="this.parentElement.parentElement.remove()" aria-label="Fechar notificação">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="progress-bar"></div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <script>
+        let pdfDoc = null;
+        let pageNum = 1;
+        let canvas = document.getElementById('pdfCanvas');
+        let ctx = canvas.getContext('2d');
+        let pdfScale = 1.5;
+
+        function loadPDF() {
+            const reportSelect = document.getElementById('report-select');
+            const pdfUrl = reportSelect.value;
+            if (!pdfUrl) {
+                showNotification('Por favor, selecione um relatório.', 'error');
+                return;
+            }
+
+            pdfjsLib.getDocument(pdfUrl).promise.then(pdf => {
+                pdfDoc = pdf;
+                renderPage(pageNum);
+            }).catch(err => {
+                console.error('Erro ao carregar PDF:', err);
+                showNotification('Erro ao carregar o PDF. Verifique o arquivo e tente novamente.', 'error');
+            });
+        }
+
+        function renderPage(num) {
+            pdfDoc.getPage(num).then(page => {
+                const viewport = page.getViewport({ scale: pdfScale });
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                page.render({
+                    canvasContext: ctx,
+                    viewport: viewport
+                }).promise.then(() => {
+                    // PDF renderizado sem assinatura
+                });
+            });
+        }
+
+        function signWithAdobe() {
+            const reportSelect = document.getElementById('report-select');
+            const reportPath = reportSelect.value;
+            if (!reportPath) {
+                showNotification('Selecione um relatório antes de assinar.', 'error');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('report_path', reportPath);
+
+            fetch('/send_to_adobe_sign', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json()).then(data => {
+                if (data.success && data.sign_url) {
+                    // Redirecionar para a URL de assinatura do Adobe Sign
+                    window.location.href = data.sign_url;
+                } else {
+                    showNotification('Erro ao iniciar a assinatura: ' + (data.message || 'Tente novamente.'), 'error');
+                }
+            }).catch(err => {
+                console.error('Erro ao iniciar assinatura:', err);
+                showNotification('Erro ao iniciar a assinatura. Tente novamente.', 'error');
+            });
+        }
+
+        function showNotification(message, type = 'error') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <span>${message}</span>
+                    <button class="notification-close" onclick="this.parentElement.parentElement.remove()" aria-label="Fechar notificação">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="progress-bar"></div>
+            `;
+            document.body.appendChild(notification);
+            notification.querySelector('.progress-bar').addEventListener('animationend', () => {
+                notification.remove();
+            });
+        }
+
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+        }
+
+        function toggleSubmenu(element) {
+            const submenu = element.nextElementSibling;
+            const arrow = element.querySelector('.arrow');
+            element.parentElement.classList.toggle('submenu-active');
+            submenu.style.maxHeight = submenu.style.maxHeight ? null : submenu.scrollHeight + 'px';
+            arrow.style.transform = submenu.style.maxHeight ? 'rotate(90deg)' : 'rotate(0deg)';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const collapsible = document.querySelector('.collapsible');
+            const submenu = collapsible.querySelector('.submenu');
+            const arrow = collapsible.querySelector('.arrow');
+            const currentPath = window.location.pathname;
+            const reportPaths = ['/generate_report', '/track_reports', '/employer_reports', '/generate_fiscal_report', '/signed_reports'];
+
+            if (reportPaths.includes(currentPath)) {
+                collapsible.classList.add('submenu-active');
+                submenu.style.maxHeight = submenu.scrollHeight + 'px';
+                arrow.style.transform = 'rotate(90deg)';
+            }
+
+            document.querySelectorAll('.progress-bar').forEach(bar => {
+                bar.addEventListener('animationend', () => {
+                    bar.closest('.notification').remove();
+                });
+            });
+        });
+    </script>
+</body>
+</html>

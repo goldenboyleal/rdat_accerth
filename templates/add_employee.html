@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Funcionário - RDAT</title>
+    <link rel="shortcut icon" href="/static/imagens/modelo-oficial-icon-accerth-removebg-preview (4).png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='add_employee.css') }}?v=2.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="/static/imagens/logo-accerth-oficial.png" alt="Accerth Logo" class="logo">
+            <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Alternar menu lateral">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <div class="sidebar-content">
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}" aria-label="Tela Inicial"><i class="fas fa-home"></i> Tela Inicial</a></li>
+                    <li class="collapsible submenu-active">
+                        <a href="#" onclick="toggleSubmenu(this); return false;" aria-label="Expandir menu de cadastros gerais"><i class="fas fa-users"></i> Cadastros Gerais <i class="fas fa-chevron-right arrow"></i></a>
+                        <ul class="submenu">
+                            <li><a href="{{ url_for('add_unit') }}" class="{% if request.endpoint == 'add_unit' %}active{% endif %}" aria-label="Cadastrar Unidade"><i class="fas fa-building"></i> Cadastrar Unidade</a></li>
+                            <li><a href="{{ url_for('add_employee') }}" class="{% if request.endpoint == 'add_employee' %}active{% endif %}" aria-label="Cadastrar Funcionário"><i class="fas fa-user-plus"></i> Cadastrar Funcionário</a></li>
+                            <li><a href="{{ url_for('employees') }}" class="{% if request.endpoint == 'employees' %}active{% endif %}" aria-label="Funcionários"><i class="fas fa-users"></i> Funcionários</a></li>
+                            <li><a href="{{ url_for('system_users') }}" class="{% if request.endpoint == 'system_users' %}active{% endif %}" aria-label="Usuários do Sistema"><i class="fas fa-user-shield"></i> Usuários do Sistema</a></li>
+                        </ul>
+                    </li>
+                    <li class="collapsible">
+                        <a href="#" onclick="toggleSubmenu(this); return false;" aria-label="Expandir menu de relatórios"><i class="fas fa-file-alt"></i> Relatórios <i class="fas fa-chevron-right arrow"></i></a>
+                        <ul class="submenu">
+                            <li><a href="{{ url_for('employer_reports') }}" class="{% if request.endpoint == 'employer_reports' %}active{% endif %}" aria-label="Acompanhar Relatórios"><i class="fas fa-eye"></i> Acompanhar Relatórios</a></li>
+                            <li><a href="{{ url_for('signed_reports_empregador') }}" class="{% if request.endpoint == 'signed_reports_empregador' %}active{% endif %}" aria-label="Gerar Relatórios Assinados"><i class="fas fa-file-signature"></i> Gerar Relatórios Assinados</a></li>
+                            {% if session['role'] in ['colaborador', 'empregador'] %}
+                            <li><a href="{{ url_for('units') }}" class="{% if request.endpoint == 'units' %}active{% endif %}" aria-label="Enviar Relatórios"><i class="fas fa-file-arrow-up"></i> Enviar Relatórios</a></li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div class="sidebar-footer">
+            <ul>
+                <li><a href="{{ url_for('duvidas') }}" class="footer-link {% if request.endpoint == 'duvidas' %}active{% endif %}" aria-label="Dúvidas"><i class="fas fa-question-circle"></i> Dúvidas</a></li>
+            </ul>
+        </div>
+    </aside>
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header>
+            <div class="header-content">
+                <span>Bem-vindo, {{ employee_name }}!</span>
+                <div class="header-right">
+                    <a href="{{ url_for('logout') }}" aria-label="Sair do sistema">Sair</a>
+                </div>
+            </div>
+        </header>
+        <!-- Section -->
+        <section class="section">
+            <h2>Cadastrar Funcionário</h2>
+            <form method="POST" action="{{ url_for('add_employee') }}" class="unit-form" id="addEmployeeForm" novalidate>
+                <div class="form-group">
+                    <label for="employer_code">Matrícula</label>
+                    <input type="text" id="employer_code" name="employer_code" placeholder="Digite a matrícula" required aria-required="true">
+                    <span id="employerCodeError" class="error-message"></span>
+                </div>
+                <div class="form-group">
+                    <label for="name">Nome</label>
+                    <input type="text" id="name" name="name" placeholder="Digite o nome" required aria-required="true">
+                    <span id="nameError" class="error-message"></span>
+                </div>
+                <div class="form-group">
+                    <label for="admission_date">Data de Admissão</label>
+                    <input type="date" id="admission_date" name="admission_date" required aria-required="true">
+                    <span id="admissionDateError" class="error-message"></span>
+                </div>
+                <div class="form-group">
+                    <label for="position">Função</label>
+                    <input type="text" id="position" name="position" placeholder="Digite a função" required aria-required="true">
+                    <span id="positionError" class="error-message"></span>
+                </div>
+                <div class="form-group">
+                    <label for="unit">Unidade</label>
+                    <select id="unit" name="unit" required aria-required="true">
+                        <option value="" disabled selected>Selecione uma unidade</option>
+                        {% for unit in units %}
+                            <option value="{{ unit.name }}">{{ unit.name }}</option>
+                        {% endfor %}
+                    </select>
+                    <span id="unitError" class="error-message"></span>
+                </div>
+                <div class="form-group">
+                    <label for="pin">PIN</label>
+                    <input type="password" id="pin" name="pin" placeholder="Digite o PIN" required aria-required="true">
+                    <span id="pinError" class="error-message"></span>
+                </div>
+                <div class="form-buttons">
+                    <button type="submit" class="btn primary" id="submitButton" aria-label="Cadastrar funcionário"><i class="fas fa-save"></i> Cadastrar</button>
+                    <a href="{{ url_for('home') }}" class="btn secondary" aria-label="Cancelar cadastro">Cancelar</a>
+                </div>
+            </form>
+        </section>
+    </div>
+    <!-- Notificações -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="notification {{ category }}" data-notification>
+                    <div class="notification-content">
+                        <span>{{ message }}</span>
+                        <button class="notification-close" onclick="this.parentElement.parentElement.remove()" aria-label="Fechar notificação">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="progress-bar"></div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+            console.log('Sidebar toggled');
+        }
+
+        function toggleSubmenu(element) {
+            const submenu = element.nextElementSibling;
+            const arrow = element.querySelector('.arrow');
+            element.parentElement.classList.toggle('submenu-active');
+            submenu.style.maxHeight = submenu.style.maxHeight ? null : submenu.scrollHeight + 20 + 'px'; // Ajustado para margens
+            arrow.style.transform = submenu.style.maxHeight ? 'rotate(90deg)' : 'rotate(0deg)';
+            console.log('Submenu toggled:', element.textContent);
+        }
+
+        function showNotification(message, type) {
+            console.log('Showing notification:', message, type);
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.setAttribute('data-notification', '');
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <span>${message}</span>
+                    <button class="notification-close" onclick="this.parentElement.parentElement.remove()" aria-label="Fechar notificação">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="progress-bar"></div>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 5000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded');
+            document.querySelectorAll('.collapsible.submenu-active').forEach(collapsible => {
+                const submenu = collapsible.querySelector('.submenu');
+                const arrow = collapsible.querySelector('.arrow');
+                submenu.style.maxHeight = submenu.scrollHeight + 20 + 'px'; // Ajustado para margens
+                arrow.style.transform = 'rotate(90deg)';
+                console.log('Submenu initialized:', collapsible.textContent);
+            });
+
+            // Adicionar setTimeout para notificações renderizadas pelo Flask
+            document.querySelectorAll('[data-notification]').forEach(notification => {
+                setTimeout(() => notification.remove(), 5000);
+            });
+
+            const form = document.getElementById('addEmployeeForm');
+            const submitButton = document.getElementById('submitButton');
+            const inputs = {
+                employer_code: { input: document.getElementById('employer_code'), error: document.getElementById('employerCodeError') },
+                name: { input: document.getElementById('name'), error: document.getElementById('nameError') },
+                admission_date: { input: document.getElementById('admission_date'), error: document.getElementById('admissionDateError') },
+                position: { input: document.getElementById('position'), error: document.getElementById('positionError') },
+                unit: { input: document.getElementById('unit'), error: document.getElementById('unitError') },
+                pin: { input: document.getElementById('pin'), error: document.getElementById('pinError') }
+            };
+
+            // Função para verificar o PIN
+            async function checkPin(pin) {
+                console.log('Verificando PIN...');
+                if (!pin) {
+                    inputs.pin.error.style.display = 'block';
+                    inputs.pin.error.textContent = 'PIN é obrigatório.';
+                    inputs.pin.input.setCustomValidity('PIN é obrigatório.');
+                    return false;
+                }
+                try {
+                    const response = await fetch('/check_pin', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ pin })
+                    });
+                    console.log('Resposta /check_pin status:', response.status);
+                    const data = await response.json();
+                    console.log('Resposta /check_pin:', JSON.stringify(data, null, 2));
+                    if (!data.success) {
+                        inputs.pin.error.style.display = 'block';
+                        inputs.pin.error.textContent = data.message || 'Este PIN já está cadastrado.';
+                        inputs.pin.input.setCustomValidity(data.message || 'PIN inválido.');
+                        return false;
+                    }
+                    inputs.pin.error.style.display = 'none';
+                    inputs.pin.input.setCustomValidity('');
+                    return true;
+                } catch (error) {
+                    console.error('Erro ao verificar PIN:', error.message, error.stack);
+                    inputs.pin.error.style.display = 'block';
+                    inputs.pin.error.textContent = 'Erro ao verificar PIN. Tente novamente.';
+                    inputs.pin.input.setCustomValidity('Erro ao verificar PIN.');
+                    return false;
+                }
+            }
+
+            // Função para verificar a matrícula
+            async function checkEmployerCode(employerCode) {
+                console.log('Verificando matrícula:', employerCode);
+                if (!employerCode) {
+                    inputs.employer_code.error.style.display = 'block';
+                    inputs.employer_code.error.textContent = 'Matrícula é obrigatória.';
+                    inputs.employer_code.input.setCustomValidity('Matrícula é obrigatória.');
+                    return false;
+                }
+                try {
+                    const response = await fetch('/check_employer_code', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ employer_code: employerCode })
+                    });
+                    console.log('Resposta /check_employer_code status:', response.status);
+                    const data = await response.json();
+                    console.log('Resposta /check_employer_code:', JSON.stringify(data, null, 2));
+                    if (!data.success) {
+                        inputs.employer_code.error.style.display = 'block';
+                        inputs.employer_code.error.textContent = data.message || 'Esta matrícula já está cadastrada.';
+                        inputs.employer_code.input.setCustomValidity(data.message || 'Matrícula inválida.');
+                        return false;
+                    }
+                    inputs.employer_code.error.style.display = 'none';
+                    inputs.employer_code.input.setCustomValidity('');
+                    return true;
+                } catch (error) {
+                    console.error('Erro ao verificar matrícula:', error.message, error.stack);
+                    inputs.employer_code.error.style.display = 'block';
+                    inputs.employer_code.error.textContent = 'Erro ao verificar matrícula. Tente novamente.';
+                    inputs.employer_code.input.setCustomValidity('Erro ao verificar matrícula.');
+                    return false;
+                }
+            }
+
+            // Função para validar todos os campos
+            function validateFields() {
+                let allValid = true;
+                Object.values(inputs).forEach(({ input, error }) => {
+                    input.setCustomValidity('');
+                    if (!input.value.trim()) {
+                        error.style.display = 'block';
+                        error.textContent = 'Campo obrigatório.';
+                        input.setCustomValidity('Campo obrigatório.');
+                        allValid = false;
+                    } else if (!input.validity.valid) {
+                        error.style.display = 'block';
+                        error.textContent = input.validationMessage || 'Campo inválido.';
+                        input.setCustomValidity(input.validationMessage || 'Campo inválido.');
+                        allValid = false;
+                    } else {
+                        error.style.display = 'none';
+                        error.textContent = '';
+                        input.setCustomValidity('');
+                    }
+                });
+                return allValid;
+            }
+
+            // Envio do formulário
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                console.log('Formulário submetido, validando...');
+
+                // Desabilitar botão para evitar múltiplos envios
+                submitButton.disabled = true;
+
+                const employerCode = inputs.employer_code.input.value.trim();
+                const pin = inputs.pin.input.value.trim();
+                const isFormValid = validateFields();
+
+                console.log('Validade do formulário:', isFormValid);
+
+                const isEmployerCodeValid = await checkEmployerCode(employerCode);
+                const isPinValid = await checkPin(pin);
+
+                console.log('Estado final:', { isFormValid, isEmployerCodeValid, isPinValid });
+
+                if (isFormValid && isEmployerCodeValid && isPinValid) {
+                    console.log('Formulário válido, enviando para:', form.action);
+                    try {
+                        form.submit();
+                        console.log('Formulário enviado');
+                    } catch (error) {
+                        console.error('Erro ao enviar formulário:', error.message, error.stack);
+                        showNotification('Erro ao enviar formulário. Tente novamente.', 'error');
+                        submitButton.disabled = false;
+                    }
+                } else {
+                    console.log('Formulário inválido, envio bloqueado');
+                    form.classList.add('was-validated');
+                    showNotification('Por favor, corrija os erros no formulário.', 'error');
+                    submitButton.disabled = false;
+                }
+            });
+
+            // Reabilitar botão quando a página é recarregada
+            window.addEventListener('pageshow', () => {
+                submitButton.disabled = false;
+            });
+        });
+    </script>
+</body>
+</html>

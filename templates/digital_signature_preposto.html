@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Assinatura Digital - Preposto</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='imagens/modelo-oficial-icon-accerth-removebg-preview (4).png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='digital_signature_preposto.css') }}?v=1.2">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.10.377/pdf.min.js"></script>
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="{{ url_for('static', filename='imagens/logo-accerth-oficial.png') }}" alt="Accerth Logo" class="logo">
+            <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Alternar menu lateral">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <div class="sidebar-content">
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('home_preposto') }}" class="{% if request.endpoint == 'home_preposto' %}active{% endif %}" aria-label="Tela Inicial"><i class="fas fa-home"></i> Tela Inicial</a></li>
+                    <li class="collapsible {% if request.endpoint == 'generate_report_preposto' %}submenu-active{% endif %}">
+                        <a href="#" onclick="toggleSubmenu(this); return false;" aria-label="Expandir menu de relatórios"><i class="fas fa-file-alt"></i> Relatórios <i class="fas fa-chevron-right arrow"></i></a>
+                        <ul class="submenu">
+                            <li><a href="{{ url_for('generate_report_preposto') }}" class="{% if request.endpoint == 'generate_report_preposto' %}active{% endif %}" aria-label="Gerar Relatório"><i class="fas fa-file-alt"></i> Gerar Relatório</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="{{ url_for('digital_signature_preposto') }}" class="{% if request.endpoint == 'digital_signature_preposto' %}active{% endif %}" aria-label="Assinatura Digital"><i class="fas fa-signature"></i> Assinatura Digital</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="sidebar-footer">
+            <ul>
+                <li><a href="{{ url_for('duvidas') }}" class="footer-link" aria-label="Dúvidas"><i class="fas fa-question-circle"></i> Dúvidas</a></li>
+            </ul>
+        </div>
+    </aside>
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header>
+            <div class="header-content">
+                <span>Bem-vindo, {{ preposto_name }}! (Unidade: {{ unit }})</span>
+                <div class="header-right">
+                    <a href="{{ url_for('logout') }}" aria-label="Sair do sistema">Sair</a>
+                </div>
+            </div>
+        </header>
+        <!-- Section -->
+        <section class="section">
+            <h2>Assinatura Digital - Preposto</h2>
+            <div class="filters">
+                <div class="form-group">
+                    <label for="employee-select">Selecione o Colaborador</label>
+                    <select id="employee-select" onchange="loadSignedReports()" aria-label="Selecionar colaborador">
+                        <option value="">Selecione um colaborador</option>
+                        {% for employee in employees %}
+                            <option value="{{ employee.id }}">{{ employee.name }} - {{ employee.employer_code }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="report-select">Selecione o Relatório Assinado</label>
+                    <select id="report-select" onchange="loadPDF()" aria-label="Selecionar relatório assinado">
+                        <option value="">Selecione um relatório</option>
+                    </select>
+                </div>
+            </div>
+            <div class="pdf-container">
+                <canvas id="pdfCanvas" aria-label="Visualização do PDF"></canvas>
+            </div>
+            <div class="signature-options">
+                <button class="btn save-btn" onclick="enableDrawing()" aria-label="Desenhar assinatura"><i class="fas fa-pencil-alt"></i> Desenhar Assinatura</button>
+                <button class="btn edit-btn" onclick="enableTyping()" aria-label="Digitar assinatura"><i class="fas fa-keyboard"></i> Digitar Assinatura</button>
+                <button class="btn edit-btn" onclick="document.getElementById('signatureImage').click()" aria-label="Carregar assinatura"><i class="fas fa-upload"></i> Carregar Assinatura</button>
+                <input type="file" id="signatureImage" accept="image/*" style="display: none;" onchange="uploadSignature(event)" aria-label="Carregar imagem de assinatura">
+            </div>
+            <div id="signatureInputContainer" style="display: none;">
+                <textarea id="signatureText" class="signature-input" placeholder="Digite seu nome para a assinatura" aria-label="Campo para digitar assinatura"></textarea>
+                <button class="btn save-btn" onclick="applyTypedSignature()" aria-label="Aplicar assinatura digitada"><i class="fas fa-check"></i> Aplicar</button>
+            </div>
+            <canvas id="signatureCanvas" width="300" height="100" style="display: none;" aria-label="Área para desenhar assinatura"></canvas>
+            <div class="action-buttons">
+                <button class="btn save-btn" onclick="saveSignedPDF()" aria-label="Salvar PDF assinado"><i class="fas fa-save"></i> Salvar PDF Assinado</button>
+                <button class="btn edit-btn" onclick="clearSignature()" aria-label="Limpar assinatura"><i class="fas fa-trash"></i> Limpar Assinatura</button>
+            </div>
+        </section>
+    </div>
+    <!-- Notificações -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="notification {{ 'error' if category == 'error' else 'success' }}">
+                    <div class="notification-content">
+                        <span>{{ message }}</span>
+                        <button class="notification-close" onclick="this.parentElement.parentElement.remove()" aria-label="Fechar notificação">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="progress-bar"></div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <script>
+        let pdfDoc = null;
+        let pageNum = 1;
+        let canvas = document.getElementById('pdfCanvas');
+        let ctx = canvas.getContext('2d');
+        let signatureCanvas = document.getElementById('signatureCanvas');
+        let signatureCtx = signatureCanvas.getContext('2d');
+        let isDrawing = false;
+        let lastX = 0;
+        let lastY = 0;
+        let signatureData = null;
+
+        function loadSignedReports() {
+            const employeeSelect = document.getElementById('employee-select');
+            const employeeId = employeeSelect.value;
+            const reportSelect = document.getElementById('report-select');
+            reportSelect.innerHTML = '<option value="">Selecione um relatório</option>';
+            if (!employeeId) {
+                showNotification('Por favor, selecione um colaborador.', 'error');
+                return;
+            }
+
+            fetch(`/get_signed_reports/${employeeId}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        data.reports.forEach(report => {
+                            const option = document.createElement('option');
+                            option.value = report.file_path;
+                            option.textContent = `${report.report_number} - ${report.created_at}`;
+                            reportSelect.appendChild(option);
+                        });
+                    } else {
+                        showNotification('Erro ao carregar relatórios: ' + data.message, 'error');
+                    }
+                })
+                .catch(err => {
+                    console.error('Erro ao carregar relatórios assinados:', err);
+                    showNotification('Erro ao carregar relatórios assinados.', 'error');
+                });
+        }
+
+        function loadPDF() {
+            const reportSelect = document.getElementById('report-select');
+            const pdfUrl = reportSelect.value;
+            if (!pdfUrl) {
+                showNotification('Por favor, selecione um relatório.', 'error');
+                return;
+            }
+
+            pdfjsLib.getDocument(pdfUrl).promise.then(pdf => {
+                pdfDoc = pdf;
+                renderPage(pageNum);
+            }).catch(err => {
+                console.error('Erro ao carregar PDF:', err);
+                showNotification('Erro ao carregar o PDF. Verifique o arquivo e tente novamente.', 'error');
+            });
+        }
+
+        function renderPage(num) {
+            pdfDoc.getPage(num).then(page => {
+                const viewport = page.getViewport({ scale: 1.5 });
+                canvas.height = viewport.height;
+                canvas.width = viewport.width;
+
+                page.render({
+                    canvasContext: ctx,
+                    viewport: viewport
+                }).promise.then(() => {
+                    if (signatureData) {
+                        ctx.drawImage(signatureData, canvas.width - 300, canvas.height - 100, 200, 60);
+                    }
+                });
+            });
+        }
+
+        function enableDrawing() {
+            signatureCanvas.style.display = 'block';
+            document.getElementById('signatureInputContainer').style.display = 'none';
+            signatureCtx.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+
+            signatureCanvas.addEventListener('mousedown', startDrawing);
+            signatureCanvas.addEventListener('mousemove', draw);
+            signatureCanvas.addEventListener('mouseup', stopDrawing);
+            signatureCanvas.addEventListener('mouseout', stopDrawing);
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            [lastX, lastY] = [e.offsetX, e.offsetY];
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            signatureCtx.beginPath();
+            signatureCtx.moveTo(lastX, lastY);
+            signatureCtx.lineTo(e.offsetX, e.offsetY);
+            signatureCtx.strokeStyle = '#000';
+            signatureCtx.lineWidth = 2;
+            signatureCtx.stroke();
+            [lastX, lastY] = [e.offsetX, e.offsetY];
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+            signatureData = signatureCanvas;
+            if (pdfDoc) renderPage(pageNum);
+        }
+
+        function enableTyping() {
+            signatureCanvas.style.display = 'none';
+            document.getElementById('signatureInputContainer').style.display = 'block';
+        }
+
+        function applyTypedSignature() {
+            const text = document.getElementById('signatureText').value;
+            if (!text) {
+                showNotification('Digite um nome para a assinatura.', 'error');
+                return;
+            }
+
+            signatureCtx.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+            signatureCtx.font = '30px Arial';
+            signatureCtx.fillText(text, 10, 50);
+            signatureData = signatureCanvas;
+            if (pdfDoc) renderPage(pageNum);
+        }
+
+        function uploadSignature(event) {
+            const file = event.target.files[0];
+            if (!file) {
+                showNotification('Nenhum arquivo selecionado.', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    signatureCtx.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+                    signatureCtx.drawImage(img, 0, 0, 200, 60);
+                    signatureData = signatureCanvas;
+                    if (pdfDoc) renderPage(pageNum);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function clearSignature() {
+            signatureCtx.clearRect(0, 0, signatureCanvas.width, signatureCanvas.height);
+            signatureData = null;
+            document.getElementById('signatureText').value = '';
+            document.getElementById('signatureInputContainer').style.display = 'none';
+            signatureCanvas.style.display = 'none';
+            if (pdfDoc) renderPage(pageNum);
+        }
+
+        function saveSignedPDF() {
+            const reportSelect = document.getElementById('report-select');
+            if (!reportSelect.value) {
+                showNotification('Selecione um relatório antes de salvar.', 'error');
+                return;
+            }
+            if (!signatureData) {
+                showNotification('Adicione uma assinatura antes de salvar.', 'error');
+                return;
+            }
+
+            const reportPath = reportSelect.value;
+            const formData = new FormData();
+            formData.append('report_path', reportPath);
+            formData.append('signature_data', signatureCanvas.toDataURL());
+
+            fetch('/save_signed_pdf', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json()).then(data => {
+                if (data.success) {
+                    showNotification('PDF assinado salvo com sucesso!', 'success');
+                    window.location.reload();
+                } else {
+                    showNotification('Erro ao salvar PDF: ' + data.message, 'error');
+                }
+            }).catch(err => {
+                console.error('Erro ao salvar PDF:', err);
+                showNotification('Erro ao salvar o PDF. Tente novamente.', 'error');
+            });
+        }
+
+        function showNotification(message, type = 'error') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <span>${message}</span>
+                    <button class="notification-close" onclick="this.parentElement.parentElement.remove()" aria-label="Fechar notificação">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="progress-bar"></div>
+            `;
+            document.body.appendChild(notification);
+            notification.querySelector('.progress-bar').addEventListener('animationend', () => {
+                notification.remove();
+            });
+        }
+
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+        }
+
+        function toggleSubmenu(element) {
+            const submenu = element.nextElementSibling;
+            const arrow = element.querySelector('.arrow');
+            element.parentElement.classList.toggle('submenu-active');
+            submenu.style.maxHeight = submenu.style.maxHeight ? null : submenu.scrollHeight + 'px';
+            arrow.style.transform = submenu.style.maxHeight ? 'rotate(90deg)' : 'rotate(0deg)';
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const collapsible = document.querySelector('.collapsible');
+            const submenu = collapsible.querySelector('.submenu');
+            const arrow = collapsible.querySelector('.arrow');
+            const currentPath = window.location.pathname;
+            const reportPaths = ['/generate_report_preposto'];
+
+            if (reportPaths.includes(currentPath)) {
+                collapsible.classList.add('submenu-active');
+                submenu.style.maxHeight = submenu.scrollHeight + 'px';
+                arrow.style.transform = 'rotate(90deg)';
+            }
+
+            document.querySelectorAll('.progress-bar').forEach(bar => {
+                bar.addEventListener('animationend', () => {
+                    bar.closest('.notification').remove();
+                });
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tela Inicial</title>
+    <link rel="shortcut icon" href="/static/imagens/modelo-oficial-icon-accerth-removebg-preview (4).png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='home_funcionario.css') }}?v=1.7">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="/static/imagens/logo-accerth-oficial.png" alt="Accerth Logo" class="logo">
+            <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Alternar menu lateral">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <div class="sidebar-content">
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('home_funcionario') }}" class="{% if request.endpoint == 'home_funcionario' %}active{% endif %}" aria-label="Tela Inicial"><i class="fas fa-home"></i> Tela Inicial</a></li>
+                    <li><a href="{{ url_for('activities') }}" class="{% if request.endpoint == 'activities' %}active{% endif %}" aria-label="Atividades"><i class="fas fa-tasks"></i> Atividades</a></li>
+                    <li class="collapsible">
+                        <a href="#" onclick="toggleSubmenu(this); return false;" aria-label="Expandir menu de relatórios"><i class="fas fa-file-alt"></i> Relatórios <i class="fas fa-chevron-right arrow"></i></a>
+                        <ul class="submenu">
+                            <li><a href="{{ url_for('generate_report') }}" class="{% if request.endpoint == 'generate_report' %}active{% endif %}" aria-label="Gerar Relatório"><i class="fas fa-file-alt"></i> Gerar Relatório</a></li>
+                            <li><a href="{{ url_for('track_reports') }}" class="{% if request.endpoint == 'track_reports' %}active{% endif %}" aria-label="Acompanhar Relatórios"><i class="fas fa-search"></i> Acompanhar Relatórios</a></li>
+                            <li><a href="{{ url_for('signed_reports') }}" class="{% if request.endpoint == 'signed_reports' %}active{% endif %}" aria-label="Relatórios Assinados"><i class="fas fa-file-signature"></i> Relatórios Assinados</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="{{ url_for('digital_signature') }}" class="{% if request.endpoint == 'digital_signature' %}active{% endif %}" aria-label="Assinatura Digital"><i class="fas fa-signature"></i> Assinatura Digital</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="sidebar-footer">
+            <ul>
+                <li><a href="{{ url_for('faq') }}" class="footer-link" aria-label="Dúvidas"><i class="fas fa-question-circle"></i> Dúvidas?</a></li>
+            </ul>
+        </div>
+    </aside>
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header>
+            <div class="header-content">
+                <span>Bem-vindo, {{ employee_name }}!</span>
+                <div class="header-right">
+                    <a href="{{ url_for('logout') }}" aria-label="Sair do sistema">Sair</a>
+                </div>
+            </div>
+        </header>
+        <!-- Section -->
+        <section class="section">
+            <h2>Tela Inicial</h2>
+            <div class="employee-info">
+                <div class="employee-info-container">
+                    <div class="employee-photo-container">
+                        {% if photo_url %}
+                            <img src="{{ photo_url }}" alt="Foto do Perfil" class="employee-photo">
+                        {% else %}
+                            <div class="employee-photo-placeholder">
+                                <i class="fas fa-user fa-3x"></i>
+                            </div>
+                        {% endif %}
+                        <form action="{{ url_for('upload_photo') }}" method="POST" enctype="multipart/form-data" class="upload-form">
+                            <label for="photo-upload" class="upload-label">
+                                <i class="fas fa-camera"></i> {{ 'Substituir Foto' if photo_url else 'Adicionar Foto' }}
+                            </label>
+                            <input type="file" id="photo-upload" name="photo" accept="image/*" onchange="this.form.submit()" aria-label="{{ 'Substituir foto de perfil' if photo_url else 'Adicionar foto de perfil' }}">
+                        </form>
+                    </div>
+                    <div class="employee-info-content">
+                        <div class="employee-info-left">
+                            <div class="info-item">
+                                <label>Nome</label>
+                                <span>{{ employee_data.name }}</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Data de Admissão</label>
+                                <span>{{ employee_data.admission_date }}</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Função</label>
+                                <span>{{ employee_data.position }}</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Empresa</label>
+                                <span>ACCERTH SERVIÇOS E TECNOLOGIA LTDA.</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Contrato ICJ N°</label>
+                                <span>-</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Contrato SAP N°</label>
+                                <span>-</span>
+                            </div>
+                        </div>
+                        <div class="employee-info-right">
+                            <div class="info-item">
+                                <label>Cliente</label>
+                                <span>PETROBRAS S.A.</span>
+                            </div>
+                            <div class="info-item">
+                                <label>Unidade</label>
+                                <span>{{ employee_data.unit }}</span>
+                            </div>
+                            {% if not (employee_data.manager and employee_data.fiscal and employee_data.field_fiscal) %}
+                            <form id="supervisor-form" action="{{ url_for('save_supervisors') }}" method="POST" class="employee-info-form">
+                                <div class="info-item manager-field">
+                                    <label for="manager">Gerente</label>
+                                    <input type="text" id="manager" name="manager" placeholder="Preencher" value="{{ employee_data.manager or '' }}" required aria-label="Nome do gerente" aria-required="true">
+                                </div>
+                                <div class="info-item fiscal-field">
+                                    <label for="fiscal">Fiscal</label>
+                                    <input type="text" id="fiscal" name="fiscal" placeholder="Preencher" required aria-label="Nome do fiscal" aria-required="true">
+                                </div>
+                                <div class="info-item field-fiscal-field">
+                                    <label for="field_fiscal">Fiscal de Campo</label>
+                                    <input type="text" id="field_fiscal" name="field_fiscal" placeholder="Preencher" required aria-label="Nome do fiscal de campo" aria-required="true">
+                                </div>
+                            </form>
+                            {% else %}
+                            <div class="info-item manager-field">
+                                <label>Gerente</label>
+                                <span>{{ employee_data.manager }}</span>
+                            </div>
+                            <div class="info-item fiscal-field">
+                                <label>Fiscal</label>
+                                <span>{{ employee_data.fiscal }}</span>
+                            </div>
+                            <div class="info-item field-fiscal-field">
+                                <label>Fiscal de Campo</label>
+                                <span>{{ employee_data.field_fiscal }}</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!-- Notificações -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="notification {{ 'error' if category == 'error' else 'success' }}">
+                    <div class="notification-content">
+                        <span>{{ message }}</span>
+                        <button class="notification-close" onclick="this.parentElement.parentElement.remove()" aria-label="Fechar notificação">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="progress-bar"></div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+        }
+
+        function toggleSubmenu(element) {
+            const submenu = element.nextElementSibling;
+            const arrow = element.querySelector('.arrow');
+            element.parentElement.classList.toggle('submenu-active');
+            submenu.style.maxHeight = submenu.style.maxHeight ? null : submenu.scrollHeight + 'px';
+            arrow.style.transform = submenu.style.maxHeight ? 'rotate(90deg)' : 'rotate(0deg)';
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.collapsible.submenu-active').forEach(collapsible => {
+                const submenu = collapsible.querySelector('.submenu');
+                const arrow = collapsible.querySelector('.arrow');
+                submenu.style.maxHeight = submenu.scrollHeight + 'px';
+                arrow.style.transform = 'rotate(90deg)';
+            });
+
+            document.querySelectorAll('.progress-bar').forEach(bar => {
+                bar.addEventListener('animationend', () => {
+                    bar.closest('.notification').remove();
+                });
+            });
+        });
+
+        // Enviar formulário ao pressionar Enter nos campos de input
+        const supervisorForm = document.getElementById('supervisor-form');
+        if (supervisorForm) {
+            const inputs = supervisorForm.querySelectorAll('input');
+            inputs.forEach(input => {
+                input.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        supervisorForm.submit();
+                    }
+                });
+            });
+        }
+    </script>
+</body>
+</html>

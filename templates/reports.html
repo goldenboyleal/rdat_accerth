@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios</title>
+    <link rel="shortcut icon" href="/static/imagens/modelo-oficial-icon-accerth-removebg-preview (4).png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='reports.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="/static/imagens/logo-accerth-oficial.png" alt="Accerth Logo" class="logo">
+            <button class="sidebar-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <div class="sidebar-content">
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('home') }}"><i class="fas fa-home"></i> Tela Inicial</a></li>
+                    <li>
+                        <a href="#" class="collapsible" onclick="toggleSubmenu(this)"><i class="fas fa-users"></i> Cadastros Gerais <i class="fas fa-chevron-right arrow"></i></a>
+                        <ul class="submenu" style="display: none;">
+                            <li><a href="{{ url_for('add_employee') }}"><i class="fas fa-user-plus"></i> Cadastrar Funcionário</a></li>
+                            <li><a href="{{ url_for('employees') }}"><i class="fas fa-users"></i> Funcionários</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="{{ url_for('reports') }}" class="active"><i class="fas fa-file-alt"></i> Relatórios</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-footer">
+                <ul>
+                    <li><a href="{{ url_for('duvidas') }}" class="footer-link"><i class="fas fa-question-circle"></i> Dúvidas</a></li>
+                </ul>
+            </div>
+        </div>
+    </aside>
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header>
+            <div class="header-content">
+                <span>Bem-vindo, {{ employee_name }}!</span>
+                <a href="{{ url_for('logout') }}">Sair</a>
+            </div>
+        </header>
+        <!-- Section -->
+        <section class="section">
+            <h2>Relatórios</h2>
+            <div class="filters">
+                <div class="form-group">
+                    <label for="search">Pesquisar Funcionário</label>
+                    <input type="text" id="search" name="search" placeholder="Nome ou matrícula" value="{{ search_query or '' }}" oninput="filterEmployees()">
+                </div>
+            </div>
+            <div class="report-options">
+                <h3>Relatório Individual</h3>
+                <form method="POST" action="{{ url_for('reports') }}">
+                    <div class="form-group">
+                        <label for="employee_id">Selecionar Funcionário</label>
+                        <select id="employee_id" name="employee_id" required>
+                            <option value="">Selecione um funcionário</option>
+                            {% for employee in employees %}
+                                <option value="{{ employee.id }}">{{ employee.name }} ({{ employee.employer_code or 'N/A' }})</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="format">Formato do Relatório</label>
+                        <select id="format" name="format" required>
+                            <option value="excel">Excel</option>
+                            <option value="pdf">PDF</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn primary">Gerar Relatório</button>
+                </form>
+            </div>
+        </section>
+    </div>
+    <!-- Notificações -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="notification {{ 'error' if category == 'error' else 'success' }}">
+                    <div class="notification-content">
+                        <span>{{ message }}</span>
+                        <button class="notification-close" onclick="this.parentElement.parentElement.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="progress-bar"></div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+        }
+
+        function toggleSubmenu(element) {
+            const submenu = element.nextElementSibling;
+            const arrow = element.querySelector('.arrow');
+            const isActive = submenu.style.display === 'block';
+
+            if (isActive) {
+                submenu.style.display = 'none';
+                element.classList.remove('submenu-active');
+                arrow.classList.remove('fa-chevron-down');
+                arrow.classList.add('fa-chevron-right');
+            } else {
+                submenu.style.display = 'block';
+                element.classList.add('submenu-active');
+                arrow.classList.remove('fa-chevron-right');
+                arrow.classList.add('fa-chevron-down');
+            }
+        }
+
+        function closeSubmenu() {
+            const collapsible = document.querySelector('.collapsible');
+            const submenu = collapsible.nextElementSibling;
+            const arrow = collapsible.querySelector('.arrow');
+            submenu.style.display = 'none';
+            collapsible.classList.remove('submenu-active');
+            arrow.classList.remove('fa-chevron-down');
+            arrow.classList.add('fa-chevron-right');
+        }
+
+        document.querySelectorAll('.sidebar-content nav ul li a:not(.collapsible), .sidebar-footer ul li a').forEach(item => {
+            item.addEventListener('click', closeSubmenu);
+        });
+
+        function filterEmployees() {
+            const searchInput = document.getElementById('search').value.toLowerCase();
+            const select = document.getElementById('employee_id');
+            const options = select.querySelectorAll('option:not([value=""])');
+            
+            options.forEach(option => {
+                const text = option.textContent.toLowerCase();
+                if (text.includes(searchInput)) {
+                    option.style.display = '';
+                } else {
+                    option.style.display = 'none';
+                }
+            });
+
+            const url = new URL(window.location);
+            if (searchInput) {
+                url.searchParams.set('search', searchInput);
+            } else {
+                url.searchParams.delete('search');
+            }
+            window.history.replaceState({}, '', url);
+        }
+
+        setTimeout(() => {
+            document.querySelectorAll('.notification').forEach(notification => {
+                notification.remove();
+            });
+        }, 5000);
+    </script>
+</body>
+</html>

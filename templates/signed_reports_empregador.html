@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerar Relatórios Assinados</title>
+    <link rel="shortcut icon" href="/static/imagens/modelo-oficial-icon-accerth-removebg-preview (4).png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='signed_reports_empregador.css') }}?v=1.6">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="/static/imagens/logo-accerth-oficial.png" alt="Accerth Logo" class="logo">
+            <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Alternar menu lateral">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <div class="sidebar-content">
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('home') }}" class="{% if request.endpoint == 'home' %}active{% endif %}" aria-label="Tela Inicial"><i class="fas fa-home"></i> Tela Inicial</a></li>
+                    <li class="collapsible">
+                        <a href="#" onclick="toggleSubmenu(this); return false;" aria-label="Expandir menu de cadastros gerais"><i class="fas fa-users"></i> Cadastros Gerais <i class="fas fa-chevron-right arrow"></i></a>
+                        <ul class="submenu">
+                            <li><a href="{{ url_for('add_unit') }}" class="{% if request.endpoint == 'add_unit' %}active{% endif %}" aria-label="Cadastrar Unidade"><i class="fas fa-building"></i> Cadastrar Unidade</a></li>
+                            <li><a href="{{ url_for('add_employee') }}" class="{% if request.endpoint == 'add_employee' %}active{% endif %}" aria-label="Cadastrar Funcionário"><i class="fas fa-user-plus"></i> Cadastrar Funcionário</a></li>
+                            <li><a href="{{ url_for('employees') }}" class="{% if request.endpoint == 'employees' %}active{% endif %}" aria-label="Funcionários"><i class="fas fa-users"></i> Funcionários</a></li>
+                            <li><a href="{{ url_for('system_users') }}" class="{% if request.endpoint == 'system_users' %}active{% endif %}" aria-label="Usuários do Sistema"><i class="fas fa-user-shield"></i> Usuários do Sistema</a></li>
+                        </ul>
+                    </li>
+                    <li class="collapsible submenu-active">
+                        <a href="#" onclick="toggleSubmenu(this); return false;" aria-label="Expandir menu de relatórios"><i class="fas fa-file-alt"></i> Relatórios <i class="fas fa-chevron-right arrow"></i></a>
+                        <ul class="submenu">
+                            <li><a href="{{ url_for('employer_reports') }}" class="{% if request.endpoint == 'employer_reports' %}active{% endif %}" aria-label="Acompanhar Relatórios"><i class="fas fa-eye"></i> Acompanhar Relatórios</a></li>
+                            <li><a href="{{ url_for('signed_reports_empregador') }}" class="{% if request.endpoint == 'signed_reports_empregador' %}active{% endif %}" aria-label="Gerar Relatórios Assinados"><i class="fas fa-file-signature"></i> Gerar Relatórios Assinados</a></li>
+                            {% if session['role'] in ['colaborador', 'empregador'] %}
+                            <li><a href="{{ url_for('units') }}" class="{% if request.endpoint == 'units' %}active{% endif %}" aria-label="Enviar Relatórios"><i class="fas fa-file-arrow-up"></i> Enviar Relatórios</a></li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+        <div class="sidebar-footer">
+            <ul>
+                <li><a href="{{ url_for('duvidas') }}" class="footer-link {% if request.endpoint == 'duvidas' %}active{% endif %}" aria-label="Dúvidas"><i class="fas fa-question-circle"></i> Dúvidas</a></li>
+            </ul>
+        </div>
+    </aside>
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header>
+            <div class="header-content">
+                <span>Bem-vindo, {{ employee_name }}!</span>
+                <div class="header-right">
+                    <a href="{{ url_for('logout') }}" aria-label="Sair do sistema">Sair</a>
+                </div>
+            </div>
+        </header>
+        <!-- Section -->
+        <section class="section">
+            <h2>Gerar Relatórios Assinados</h2>
+            <!-- Filtro por Unidade -->
+            <div class="filters">
+                <div class="form-group">
+                    <label for="unit-filter">Filtrar por Unidade</label>
+                    <select id="unit-filter" name="unit" onchange="filterReports()" aria-label="Filtrar relatórios por unidade">
+                        <option value="">Todas as Unidades</option>
+                        {% for unit in units %}
+                            <option value="{{ unit }}">{{ unit }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <!-- Botão Baixar em Lote -->
+            <div class="form-buttons">
+                <button type="button" class="btn secondary" onclick="downloadBatchReport()" aria-label="Baixar relatórios em lote"><i class="fas fa-download"></i> Baixar em Lote</button>
+            </div>
+            <!-- Reports Table -->
+            <div class="table-container reports-table">
+                <h3>Relatórios Disponíveis</h3>
+                <div id="no-reports-message" style="display: none; text-align: center; color: #374151; margin: 1rem 0;">Nenhum relatório encontrado.</div>
+                {% if not reports %}
+                    <p style="text-align: center; color: #374151; margin: 1rem 0;">Nenhum relatório encontrado.</p>
+                {% else %}
+                    <table id="reports-table">
+                        <thead>
+                            <tr>
+                                <th>Número do Relatório</th>
+                                <th>Nome do Funcionário</th>
+                                <th>Unidade</th>
+                                <th>Data</th>
+                                <th>Status de Assinatura</th>
+                                <th>Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="reports-table-body">
+                            {% for report, employee in reports %}
+                                <tr data-unit="{{ employee.unit.lower() if employee.unit else '' }}">
+                                    <td>{{ report.report_number }}</td>
+                                    <td>{{ employee.name }}</td>
+                                    <td>{{ employee.unit or 'N/A' }}</td>
+                                    <td>{{ report.created_at.strftime('%d/%m/%Y') }}</td>
+                                    <td>{{ report.signature_status or 'Pendente' }}</td>
+                                    <td>
+                                        <a href="{{ url_for('download_individual_report', report_id=report.id) }}" class="download-link btn primary" aria-label="Baixar relatório {{ report.report_number }}">
+                                            <i class="fas fa-download"></i> Baixar
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+            </div>
+        </section>
+    </div>
+    <!-- Notificações -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="notification {{ 'error' if category == 'error' else 'success' }}" data-notification>
+                    <div class="notification-content">
+                        <span>{{ message }}</span>
+                        <button class="notification-close" onclick="this.parentElement.parentElement.remove()" aria-label="Fechar notificação">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="progress-bar"></div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+            console.log('Sidebar toggled');
+        }
+
+        function toggleSubmenu(element) {
+            const submenu = element.nextElementSibling;
+            const arrow = element.querySelector('.arrow');
+            element.parentElement.classList.toggle('submenu-active');
+            submenu.style.maxHeight = submenu.style.maxHeight ? null : submenu.scrollHeight + 20 + 'px';
+            arrow.style.transform = submenu.style.maxHeight ? 'rotate(90deg)' : 'rotate(0deg)';
+            console.log('Submenu toggled:', element.textContent);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('DOM loaded');
+            document.querySelectorAll('.collapsible.submenu-active').forEach(collapsible => {
+                const submenu = collapsible.querySelector('.submenu');
+                const arrow = collapsible.querySelector('.arrow');
+                submenu.style.maxHeight = submenu.scrollHeight + 20 + 'px';
+                arrow.style.transform = 'rotate(90deg)';
+                console.log('Submenu initialized:', collapsible.textContent);
+            });
+
+            document.querySelectorAll('[data-notification]').forEach(notification => {
+                console.log('Notificação estática:', {
+                    message: notification.querySelector('span').textContent,
+                    className: notification.className
+                });
+                setTimeout(() => notification.remove(), 5000);
+            });
+
+            document.querySelectorAll('.progress-bar').forEach(bar => {
+                bar.addEventListener('animationend', () => {
+                    bar.closest('.notification').remove();
+                });
+            });
+
+            filterReports();
+        });
+
+        function filterReports() {
+            const selectedUnit = document.getElementById('unit-filter').value.toLowerCase();
+            const rows = document.querySelectorAll('#reports-table-body tr[data-unit]');
+            const noReportsMessage = document.getElementById('no-reports-message');
+            let visibleRows = 0;
+
+            rows.forEach(row => {
+                const unit = row.getAttribute('data-unit');
+                const isVisible = selectedUnit === '' || unit === selectedUnit;
+                row.style.display = isVisible ? '' : 'none';
+                if (isVisible) visibleRows++;
+            });
+
+            noReportsMessage.style.display = visibleRows === 0 ? 'block' : 'none';
+        }
+
+        async function downloadIndividualReport(reportId) {
+            try {
+                const response = await fetch('{{ url_for("download_individual_report", report_id="_id") }}'.replace('_id', reportId), {
+                    method: 'GET'
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `report_${reportId}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                    showNotification('Download iniciado com sucesso!', 'success');
+                } else {
+                    const data = await response.json();
+                    showNotification(data.message || 'Erro ao baixar o relatório', 'error');
+                }
+            } catch (error) {
+                console.error('Erro ao baixar relatório individual:', error);
+                showNotification('Erro ao baixar relatório: ' + error.message, 'error');
+            }
+        }
+
+        async function downloadBatchReport() {
+            const selectedUnit = document.getElementById('unit-filter').value;
+            try {
+                const response = await fetch('{{ url_for("download_batch_report") }}', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ unit: selectedUnit })
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `batch_report_${selectedUnit || 'all'}.pdf`;
+                    document.body.appendChild(a);
+                    a.click();
+                    a.remove();
+                    window.URL.revokeObjectURL(url);
+                    showNotification('Download em lote iniciado com sucesso!', 'success');
+                } else {
+                    const data = await response.json();
+                    showNotification(data.message || 'Erro ao baixar relatórios em lote', 'error');
+                }
+            } catch (error) {
+                console.error('Erro ao baixar relatórios em lote:', error);
+                showNotification('Erro ao baixar relatórios em lote: ' + error.message, 'error');
+            }
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <span>${message}</span>
+                    <button class="notification-close" onclick="this.parentElement.parentElement.remove()" aria-label="Fechar notificação">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="progress-bar"></div>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => notification.remove(), 5000);
+        }
+    </script>
+</body>
+</html>

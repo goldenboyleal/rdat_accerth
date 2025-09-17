@@ -1,0 +1,372 @@
+2025-09-09 11:06:02,727 - INFO - Iniciando exclusão de relatórios anteriores a 2025-07-11 11:06:02.727170-03:00
+2025-09-09 11:06:02,727 - ERROR - Erro na tarefa de exclusão de relatórios: Column expression, FROM clause, or other columns clause element expected, got <class 'sqlalchemy.orm.decl_api.Model'>.
+2025-09-09 13:08:27,549 - INFO - Iniciando exclusão de relatórios anteriores a 2025-07-11 13:08:27.549477-03:00
+2025-09-09 13:08:27,574 - WARNING - Arquivo não encontrado: static/reports\rpt001.pdf (Relatório ID=48)
+2025-09-09 13:08:27,575 - INFO - Relatório excluído: ID=48, Número=RPT001, Status=Assinado
+2025-09-09 13:08:27,581 - INFO - Exclusão de relatórios antigos concluída. 1 relatórios removidos.
+2025-09-09 13:11:55,374 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.3.48:5000
+2025-09-09 13:11:55,374 - INFO - [33mPress CTRL+C to quit[0m
+2025-09-09 13:11:55,375 - INFO -  * Restarting with stat
+2025-09-09 13:11:57,587 - WARNING -  * Debugger is active!
+2025-09-09 13:11:57,589 - INFO -  * Debugger PIN: 115-909-459
+2025-09-09 13:12:00,769 - INFO - 127.0.0.1 - - [09/Sep/2025 13:12:00] "GET / HTTP/1.1" 200 -
+2025-09-09 13:12:00,889 - INFO - 127.0.0.1 - - [09/Sep/2025 13:12:00] "[36mGET /static/login.css?v=1.3 HTTP/1.1[0m" 304 -
+2025-09-09 13:12:00,975 - INFO - 127.0.0.1 - - [09/Sep/2025 13:12:00] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-09 13:12:01,117 - INFO - 127.0.0.1 - - [09/Sep/2025 13:12:01] "[36mGET /static/imagens/foto2.jpg HTTP/1.1[0m" 304 -
+2025-09-09 13:12:01,118 - INFO - 127.0.0.1 - - [09/Sep/2025 13:12:01] "[36mGET /static/imagens/foto1.jpg HTTP/1.1[0m" 304 -
+2025-09-09 13:12:01,121 - INFO - 127.0.0.1 - - [09/Sep/2025 13:12:01] "[36mGET /static/imagens/foto3.jpg HTTP/1.1[0m" 304 -
+2025-09-09 13:13:00,423 - INFO - Tentativa de login: identifier=rh@accerth.com, pin=rh_acc2025, role=empregador
+2025-09-09 13:13:00,427 - INFO - Funcionário encontrado: employer_code=None, name=RH Accerth, role=empregador
+2025-09-09 13:13:00,639 - INFO - Login bem-sucedido: employee_id=523, role=empregador
+2025-09-09 13:13:00,664 - INFO - 127.0.0.1 - - [09/Sep/2025 13:13:00] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-09-09 13:13:00,734 - INFO - 127.0.0.1 - - [09/Sep/2025 13:13:00] "GET /home HTTP/1.1" 200 -
+2025-09-09 13:13:00,744 - INFO - 127.0.0.1 - - [09/Sep/2025 13:13:00] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-09 13:13:01,076 - INFO - 127.0.0.1 - - [09/Sep/2025 13:13:01] "[36mGET /static/home.css?v=2.0 HTTP/1.1[0m" 304 -
+2025-09-09 13:13:09,014 - INFO - 127.0.0.1 - - [09/Sep/2025 13:13:09] "GET /units HTTP/1.1" 200 -
+2025-09-09 13:13:09,301 - INFO - 127.0.0.1 - - [09/Sep/2025 13:13:09] "[36mGET /static/units.css?v=1.4 HTTP/1.1[0m" 304 -
+2025-09-09 13:13:09,334 - INFO - 127.0.0.1 - - [09/Sep/2025 13:13:09] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-09 13:13:14,602 - INFO - 127.0.0.1 - - [09/Sep/2025 13:13:14] "GET /home HTTP/1.1" 200 -
+2025-09-09 13:13:14,870 - INFO - 127.0.0.1 - - [09/Sep/2025 13:13:14] "[36mGET /static/home.css?v=2.0 HTTP/1.1[0m" 304 -
+2025-09-09 13:13:14,918 - INFO - 127.0.0.1 - - [09/Sep/2025 13:13:14] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-09 13:13:25,196 - INFO - 127.0.0.1 - - [09/Sep/2025 13:13:25] "GET /add_employee HTTP/1.1" 200 -
+2025-09-09 13:13:25,509 - INFO - 127.0.0.1 - - [09/Sep/2025 13:13:25] "[36mGET /static/add_employee.css?v=2.0 HTTP/1.1[0m" 304 -
+2025-09-09 13:13:25,513 - INFO - 127.0.0.1 - - [09/Sep/2025 13:13:25] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-09 13:13:30,731 - INFO - 127.0.0.1 - - [09/Sep/2025 13:13:30] "GET /employer_reports HTTP/1.1" 200 -
+2025-09-09 13:13:31,019 - INFO - 127.0.0.1 - - [09/Sep/2025 13:13:31] "[36mGET /static/employer_reports.css?v=1.4 HTTP/1.1[0m" 304 -
+2025-09-09 13:13:31,051 - INFO - 127.0.0.1 - - [09/Sep/2025 13:13:31] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-09 13:13:35,803 - INFO - 127.0.0.1 - - [09/Sep/2025 13:13:35] "GET /units HTTP/1.1" 200 -
+2025-09-09 13:13:36,105 - INFO - 127.0.0.1 - - [09/Sep/2025 13:13:36] "[36mGET /static/units.css?v=1.4 HTTP/1.1[0m" 304 -
+2025-09-09 13:13:36,119 - INFO - 127.0.0.1 - - [09/Sep/2025 13:13:36] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-09 13:13:40,427 - INFO - 127.0.0.1 - - [09/Sep/2025 13:13:40] "GET /signed_reports_empregador HTTP/1.1" 200 -
+2025-09-09 13:13:40,725 - INFO - 127.0.0.1 - - [09/Sep/2025 13:13:40] "[36mGET /static/signed_reports_empregador.css?v=1.6 HTTP/1.1[0m" 304 -
+2025-09-09 13:13:40,740 - INFO - 127.0.0.1 - - [09/Sep/2025 13:13:40] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-09 13:13:45,242 - INFO - 127.0.0.1 - - [09/Sep/2025 13:13:45] "GET /home HTTP/1.1" 200 -
+2025-09-09 13:13:45,401 - INFO - 127.0.0.1 - - [09/Sep/2025 13:13:45] "[36mGET /static/home.css?v=2.0 HTTP/1.1[0m" 304 -
+2025-09-09 13:13:45,401 - INFO - 127.0.0.1 - - [09/Sep/2025 13:13:45] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-09 13:14:23,379 - INFO - 127.0.0.1 - - [09/Sep/2025 13:14:23] "GET /employer_reports HTTP/1.1" 200 -
+2025-09-09 13:14:23,671 - INFO - 127.0.0.1 - - [09/Sep/2025 13:14:23] "[36mGET /static/employer_reports.css?v=1.4 HTTP/1.1[0m" 304 -
+2025-09-09 13:14:23,691 - INFO - 127.0.0.1 - - [09/Sep/2025 13:14:23] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-09 13:16:15,024 - INFO - 127.0.0.1 - - [09/Sep/2025 13:16:15] "[32mGET /logout HTTP/1.1[0m" 302 -
+2025-09-09 13:16:15,248 - INFO - 127.0.0.1 - - [09/Sep/2025 13:16:15] "GET / HTTP/1.1" 200 -
+2025-09-09 13:16:15,285 - INFO - 127.0.0.1 - - [09/Sep/2025 13:16:15] "[36mGET /static/login.css?v=1.3 HTTP/1.1[0m" 304 -
+2025-09-09 13:16:15,566 - INFO - 127.0.0.1 - - [09/Sep/2025 13:16:15] "[36mGET /static/imagens/foto1.jpg HTTP/1.1[0m" 304 -
+2025-09-09 13:16:15,568 - INFO - 127.0.0.1 - - [09/Sep/2025 13:16:15] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-09 13:16:15,569 - INFO - 127.0.0.1 - - [09/Sep/2025 13:16:15] "[36mGET /static/imagens/foto2.jpg HTTP/1.1[0m" 304 -
+2025-09-09 13:16:15,573 - INFO - 127.0.0.1 - - [09/Sep/2025 13:16:15] "[36mGET /static/imagens/foto3.jpg HTTP/1.1[0m" 304 -
+2025-09-09 13:16:27,439 - INFO - Tentativa de login: identifier=pedro.leal@accerth.com, pin=Pedro_acc2025, role=fiscal
+2025-09-09 13:16:27,441 - INFO - Funcionário encontrado: employer_code=None, name=Pedro Ivo, role=fiscal
+2025-09-09 13:16:27,932 - INFO - Login bem-sucedido: employee_id=525, role=fiscal
+2025-09-09 13:16:27,934 - INFO - 127.0.0.1 - - [09/Sep/2025 13:16:27] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-09-09 13:16:28,060 - INFO - 127.0.0.1 - - [09/Sep/2025 13:16:28] "GET /home_fiscal HTTP/1.1" 200 -
+2025-09-09 13:16:28,405 - INFO - 127.0.0.1 - - [09/Sep/2025 13:16:28] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-09 13:16:28,426 - INFO - 127.0.0.1 - - [09/Sep/2025 13:16:28] "GET /static/home_fiscal.css?v=1.5 HTTP/1.1" 200 -
+2025-09-09 13:16:37,216 - INFO - 127.0.0.1 - - [09/Sep/2025 13:16:37] "GET /generate_fiscal_report HTTP/1.1" 200 -
+2025-09-09 13:16:37,524 - INFO - 127.0.0.1 - - [09/Sep/2025 13:16:37] "GET /static/generate_fiscal_report.css?v=1.3 HTTP/1.1" 200 -
+2025-09-09 13:16:37,530 - INFO - 127.0.0.1 - - [09/Sep/2025 13:16:37] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-09 13:16:49,948 - INFO - 127.0.0.1 - - [09/Sep/2025 13:16:49] "GET /home_fiscal HTTP/1.1" 200 -
+2025-09-09 13:16:50,251 - INFO - 127.0.0.1 - - [09/Sep/2025 13:16:50] "[36mGET /static/home_fiscal.css?v=1.5 HTTP/1.1[0m" 304 -
+2025-09-09 13:16:50,268 - INFO - 127.0.0.1 - - [09/Sep/2025 13:16:50] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-09 13:16:55,284 - INFO - 127.0.0.1 - - [09/Sep/2025 13:16:55] "[32mGET /logout HTTP/1.1[0m" 302 -
+2025-09-09 13:16:55,515 - INFO - 127.0.0.1 - - [09/Sep/2025 13:16:55] "GET / HTTP/1.1" 200 -
+2025-09-09 13:16:55,525 - INFO - 127.0.0.1 - - [09/Sep/2025 13:16:55] "[36mGET /static/login.css?v=1.3 HTTP/1.1[0m" 304 -
+2025-09-09 13:16:55,843 - INFO - 127.0.0.1 - - [09/Sep/2025 13:16:55] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-09 13:16:55,843 - INFO - 127.0.0.1 - - [09/Sep/2025 13:16:55] "[36mGET /static/imagens/foto1.jpg HTTP/1.1[0m" 304 -
+2025-09-09 13:16:55,844 - INFO - 127.0.0.1 - - [09/Sep/2025 13:16:55] "[36mGET /static/imagens/foto2.jpg HTTP/1.1[0m" 304 -
+2025-09-09 13:16:55,850 - INFO - 127.0.0.1 - - [09/Sep/2025 13:16:55] "[36mGET /static/imagens/foto3.jpg HTTP/1.1[0m" 304 -
+2025-09-09 13:21:15,433 - INFO -  * Detected change in 'c:\\Users\\PedroLeal\\OneDrive - ACCERTH SERVICOS E TECNOLOGIA LTDA\\rdat accerth\\test_scheduler.py', reloading
+2025-09-09 13:21:15,640 - INFO -  * Restarting with stat
+2025-09-09 13:21:17,847 - WARNING -  * Debugger is active!
+2025-09-09 13:21:17,848 - INFO -  * Debugger PIN: 115-909-459
+2025-09-09 13:21:27,398 - INFO - Iniciando exclusão de relatórios anteriores a 2025-07-11 13:21:27.398113-03:00
+2025-09-09 13:21:27,410 - INFO - Nenhum relatório antigo encontrado para exclusão.
+2025-09-09 13:26:32,570 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.3.48:5000
+2025-09-09 13:26:32,570 - INFO - [33mPress CTRL+C to quit[0m
+2025-09-09 13:26:32,572 - INFO -  * Restarting with stat
+2025-09-09 13:26:34,339 - WARNING -  * Debugger is active!
+2025-09-09 13:26:34,341 - INFO -  * Debugger PIN: 115-909-459
+2025-09-09 13:27:46,821 - INFO -  * Detected change in 'c:\\Users\\PedroLeal\\OneDrive - ACCERTH SERVICOS E TECNOLOGIA LTDA\\rdat accerth\\app.py', reloading
+2025-09-09 13:27:47,001 - INFO -  * Restarting with stat
+2025-09-09 13:27:48,928 - WARNING -  * Debugger is active!
+2025-09-09 13:27:48,930 - INFO -  * Debugger PIN: 115-909-459
+2025-09-09 13:37:22,168 - INFO -  * Detected change in 'c:\\Users\\PedroLeal\\OneDrive - ACCERTH SERVICOS E TECNOLOGIA LTDA\\rdat accerth\\app.py', reloading
+2025-09-09 13:37:22,466 - INFO -  * Restarting with stat
+2025-09-09 13:37:24,747 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-09 13:37:24,748 - INFO - Added job "init_scheduler.<locals>.<lambda>" to job store "default"
+2025-09-09 13:37:24,748 - INFO - Scheduler started
+2025-09-09 13:37:24,749 - INFO - Scheduler iniciado com sucesso.
+2025-09-09 13:37:24,756 - WARNING -  * Debugger is active!
+2025-09-09 13:37:24,758 - INFO -  * Debugger PIN: 115-909-459
+2025-09-09 13:37:38,899 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-09 13:37:38,900 - INFO - Added job "init_scheduler.<locals>.<lambda>" to job store "default"
+2025-09-09 13:37:38,900 - INFO - Scheduler started
+2025-09-09 13:37:38,901 - INFO - Scheduler iniciado com sucesso.
+2025-09-09 13:37:38,912 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.3.48:5000
+2025-09-09 13:37:38,912 - INFO - [33mPress CTRL+C to quit[0m
+2025-09-09 13:37:38,913 - INFO -  * Restarting with stat
+2025-09-09 13:37:41,199 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-09 13:37:41,200 - INFO - Added job "init_scheduler.<locals>.<lambda>" to job store "default"
+2025-09-09 13:37:41,200 - INFO - Scheduler started
+2025-09-09 13:37:41,201 - INFO - Scheduler iniciado com sucesso.
+2025-09-09 13:37:41,209 - WARNING -  * Debugger is active!
+2025-09-09 13:37:41,214 - INFO -  * Debugger PIN: 115-909-459
+2025-09-09 13:39:58,623 - INFO -  * Detected change in 'c:\\Users\\PedroLeal\\OneDrive - ACCERTH SERVICOS E TECNOLOGIA LTDA\\rdat accerth\\app.py', reloading
+2025-09-09 13:39:58,907 - INFO -  * Restarting with stat
+2025-09-09 13:40:00,638 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-09 13:40:00,640 - INFO - Added job "init_scheduler.<locals>.<lambda>" to job store "default"
+2025-09-09 13:40:00,640 - INFO - Scheduler started
+2025-09-09 13:40:00,641 - INFO - Scheduler iniciado com sucesso.
+2025-09-09 13:40:00,646 - WARNING -  * Debugger is active!
+2025-09-09 13:40:00,647 - INFO -  * Debugger PIN: 115-909-459
+2025-09-09 14:41:08,349 - INFO -  * Detected change in 'c:\\Users\\PedroLeal\\OneDrive - ACCERTH SERVICOS E TECNOLOGIA LTDA\\rdat accerth\\app.py', reloading
+2025-09-09 14:41:08,551 - INFO -  * Restarting with stat
+2025-09-09 14:41:10,387 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-09 14:41:10,388 - INFO - Added job "init_scheduler.<locals>.<lambda>" to job store "default"
+2025-09-09 14:41:10,388 - INFO - Scheduler started
+2025-09-09 14:41:10,388 - INFO - Scheduler iniciado com sucesso.
+2025-09-09 14:41:10,392 - WARNING -  * Debugger is active!
+2025-09-09 14:41:10,394 - INFO -  * Debugger PIN: 115-909-459
+2025-09-10 12:25:04,728 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-10 12:25:04,730 - INFO - Added job "init_scheduler.<locals>.<lambda>" to job store "default"
+2025-09-10 12:25:04,730 - INFO - Scheduler started
+2025-09-10 12:25:04,730 - INFO - Scheduler iniciado com sucesso.
+2025-09-10 12:25:04,750 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.3.48:5000
+2025-09-10 12:25:04,750 - INFO - [33mPress CTRL+C to quit[0m
+2025-09-10 12:25:04,753 - INFO -  * Restarting with stat
+2025-09-10 12:25:06,873 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-10 12:25:06,874 - INFO - Added job "init_scheduler.<locals>.<lambda>" to job store "default"
+2025-09-10 12:25:06,874 - INFO - Scheduler started
+2025-09-10 12:25:06,875 - INFO - Scheduler iniciado com sucesso.
+2025-09-10 12:25:06,881 - WARNING -  * Debugger is active!
+2025-09-10 12:25:06,884 - INFO -  * Debugger PIN: 891-280-794
+2025-09-10 12:40:21,163 - INFO - 127.0.0.1 - - [10/Sep/2025 12:40:21] "GET / HTTP/1.1" 200 -
+2025-09-10 12:40:21,240 - INFO - 127.0.0.1 - - [10/Sep/2025 12:40:21] "GET /rdat/static/login.css?v=1.3 HTTP/1.1" 200 -
+2025-09-10 12:40:21,291 - INFO - 127.0.0.1 - - [10/Sep/2025 12:40:21] "GET /rdat/static/imagens/logo-accerth-oficial.png HTTP/1.1" 200 -
+2025-09-10 12:40:21,498 - INFO - 127.0.0.1 - - [10/Sep/2025 12:40:21] "GET /rdat/static/imagens/foto1.jpg HTTP/1.1" 200 -
+2025-09-10 12:40:21,498 - INFO - 127.0.0.1 - - [10/Sep/2025 12:40:21] "GET /rdat/static/imagens/foto2.jpg HTTP/1.1" 200 -
+2025-09-10 12:40:21,505 - INFO - 127.0.0.1 - - [10/Sep/2025 12:40:21] "GET /rdat/static/imagens/foto3.jpg HTTP/1.1" 200 -
+2025-09-10 13:07:36,271 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-10 13:07:36,273 - INFO - Added job "init_scheduler.<locals>.<lambda>" to job store "default"
+2025-09-10 13:07:36,273 - INFO - Scheduler started
+2025-09-10 13:07:36,274 - INFO - Scheduler iniciado com sucesso.
+2025-09-10 13:07:36,292 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.3.48:5000
+2025-09-10 13:07:36,292 - INFO - [33mPress CTRL+C to quit[0m
+2025-09-10 13:07:36,294 - INFO -  * Restarting with stat
+2025-09-10 13:07:38,399 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-10 13:07:38,400 - INFO - Added job "init_scheduler.<locals>.<lambda>" to job store "default"
+2025-09-10 13:07:38,400 - INFO - Scheduler started
+2025-09-10 13:07:38,401 - INFO - Scheduler iniciado com sucesso.
+2025-09-10 13:07:38,405 - WARNING -  * Debugger is active!
+2025-09-10 13:07:38,407 - INFO -  * Debugger PIN: 891-280-794
+2025-09-10 13:19:28,395 - INFO -  * Detected change in 'c:\\Users\\PedroLeal\\rdat_accerth\\app.py', reloading
+2025-09-10 13:19:28,601 - INFO -  * Restarting with stat
+2025-09-10 13:19:30,711 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-10 13:19:30,712 - INFO - Added job "init_scheduler.<locals>.<lambda>" to job store "default"
+2025-09-10 13:19:30,712 - INFO - Scheduler started
+2025-09-10 13:19:30,713 - INFO - Scheduler iniciado com sucesso.
+2025-09-10 13:19:30,717 - WARNING -  * Debugger is active!
+2025-09-10 13:19:30,718 - INFO -  * Debugger PIN: 891-280-794
+2025-09-10 13:46:04,927 - INFO - 127.0.0.1 - - [10/Sep/2025 13:46:04] "[33mGET / HTTP/1.1[0m" 404 -
+2025-09-10 13:46:05,007 - INFO - 127.0.0.1 - - [10/Sep/2025 13:46:05] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-09-10 13:46:12,815 - INFO - 127.0.0.1 - - [10/Sep/2025 13:46:12] "[33mGET /home HTTP/1.1[0m" 404 -
+2025-09-10 13:46:29,604 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-10 13:46:29,606 - INFO - Added job "init_scheduler.<locals>.<lambda>" to job store "default"
+2025-09-10 13:46:29,606 - INFO - Scheduler started
+2025-09-10 13:46:29,607 - INFO - Scheduler iniciado com sucesso.
+2025-09-10 13:46:29,623 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.3.48:5000
+2025-09-10 13:46:29,623 - INFO - [33mPress CTRL+C to quit[0m
+2025-09-10 13:46:29,625 - INFO -  * Restarting with stat
+2025-09-10 13:46:32,994 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-10 13:46:32,996 - INFO - Added job "init_scheduler.<locals>.<lambda>" to job store "default"
+2025-09-10 13:46:32,996 - INFO - Scheduler started
+2025-09-10 13:46:32,996 - INFO - Scheduler iniciado com sucesso.
+2025-09-10 13:46:33,004 - WARNING -  * Debugger is active!
+2025-09-10 13:46:33,007 - INFO -  * Debugger PIN: 891-280-794
+2025-09-10 13:46:37,742 - INFO - 127.0.0.1 - - [10/Sep/2025 13:46:37] "[33mGET / HTTP/1.1[0m" 404 -
+2025-09-10 13:46:37,902 - INFO - 127.0.0.1 - - [10/Sep/2025 13:46:37] "[33mGET /favicon.ico HTTP/1.1[0m" 404 -
+2025-09-10 13:52:23,770 - INFO -  * Detected change in 'c:\\Users\\PedroLeal\\rdat_accerth\\app.py', reloading
+2025-09-10 13:52:24,290 - INFO -  * Restarting with stat
+2025-09-10 13:55:33,027 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-10 13:55:33,029 - INFO - Added job "init_scheduler.<locals>.<lambda>" to job store "default"
+2025-09-10 13:55:33,029 - INFO - Scheduler started
+2025-09-10 13:55:33,030 - INFO - Scheduler iniciado com sucesso.
+2025-09-10 13:55:33,050 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.3.48:5000
+2025-09-10 13:55:33,050 - INFO - [33mPress CTRL+C to quit[0m
+2025-09-10 13:55:33,052 - INFO -  * Restarting with stat
+2025-09-10 13:55:36,567 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-10 13:55:36,569 - INFO - Added job "init_scheduler.<locals>.<lambda>" to job store "default"
+2025-09-10 13:55:36,569 - INFO - Scheduler started
+2025-09-10 13:55:36,571 - INFO - Scheduler iniciado com sucesso.
+2025-09-10 13:55:36,582 - WARNING -  * Debugger is active!
+2025-09-10 13:55:36,586 - INFO -  * Debugger PIN: 891-280-794
+2025-09-10 13:55:36,935 - INFO - 127.0.0.1 - - [10/Sep/2025 13:55:36] "GET / HTTP/1.1" 200 -
+2025-09-10 13:55:37,072 - INFO - 127.0.0.1 - - [10/Sep/2025 13:55:37] "GET /static/imagens/logo-accerth-oficial.png HTTP/1.1" 200 -
+2025-09-10 13:55:37,083 - INFO - 127.0.0.1 - - [10/Sep/2025 13:55:37] "GET /static/login.css?v=1.3 HTTP/1.1" 200 -
+2025-09-10 13:55:37,307 - INFO - 127.0.0.1 - - [10/Sep/2025 13:55:37] "GET /static/imagens/foto2.jpg HTTP/1.1" 200 -
+2025-09-10 13:55:37,308 - INFO - 127.0.0.1 - - [10/Sep/2025 13:55:37] "GET /static/imagens/foto1.jpg HTTP/1.1" 200 -
+2025-09-10 13:55:37,310 - INFO - 127.0.0.1 - - [10/Sep/2025 13:55:37] "GET /static/imagens/foto3.jpg HTTP/1.1" 200 -
+2025-09-10 13:55:41,427 - INFO - 127.0.0.1 - - [10/Sep/2025 13:55:41] "GET / HTTP/1.1" 200 -
+2025-09-10 13:55:41,539 - INFO - 127.0.0.1 - - [10/Sep/2025 13:55:41] "[36mGET /static/login.css?v=1.3 HTTP/1.1[0m" 304 -
+2025-09-10 13:55:41,704 - INFO - 127.0.0.1 - - [10/Sep/2025 13:55:41] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-10 13:55:41,766 - INFO - 127.0.0.1 - - [10/Sep/2025 13:55:41] "[36mGET /static/imagens/foto1.jpg HTTP/1.1[0m" 304 -
+2025-09-10 13:55:41,782 - INFO - 127.0.0.1 - - [10/Sep/2025 13:55:41] "[36mGET /static/imagens/foto2.jpg HTTP/1.1[0m" 304 -
+2025-09-10 13:55:41,800 - INFO - 127.0.0.1 - - [10/Sep/2025 13:55:41] "[36mGET /static/imagens/foto3.jpg HTTP/1.1[0m" 304 -
+2025-09-10 13:56:56,755 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-10 13:56:56,756 - INFO - Added job "init_scheduler.<locals>.<lambda>" to job store "default"
+2025-09-10 13:56:56,757 - INFO - Scheduler started
+2025-09-10 13:56:56,757 - INFO - Scheduler iniciado com sucesso.
+2025-09-10 13:56:56,779 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.3.48:5000
+2025-09-10 13:56:56,779 - INFO - [33mPress CTRL+C to quit[0m
+2025-09-10 13:56:56,782 - INFO -  * Restarting with stat
+2025-09-10 13:57:00,477 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-10 13:57:00,479 - INFO - Added job "init_scheduler.<locals>.<lambda>" to job store "default"
+2025-09-10 13:57:00,479 - INFO - Scheduler started
+2025-09-10 13:57:00,480 - INFO - Scheduler iniciado com sucesso.
+2025-09-10 13:57:00,490 - WARNING -  * Debugger is active!
+2025-09-10 13:57:00,495 - INFO -  * Debugger PIN: 891-280-794
+2025-09-10 13:57:08,538 - INFO - 127.0.0.1 - - [10/Sep/2025 13:57:08] "GET / HTTP/1.1" 200 -
+2025-09-10 13:57:08,666 - INFO - 127.0.0.1 - - [10/Sep/2025 13:57:08] "[36mGET /static/login.css?v=1.3 HTTP/1.1[0m" 304 -
+2025-09-10 13:57:08,764 - INFO - 127.0.0.1 - - [10/Sep/2025 13:57:08] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-10 13:57:08,872 - INFO - 127.0.0.1 - - [10/Sep/2025 13:57:08] "[36mGET /static/imagens/foto2.jpg HTTP/1.1[0m" 304 -
+2025-09-10 13:57:08,875 - INFO - 127.0.0.1 - - [10/Sep/2025 13:57:08] "[36mGET /static/imagens/foto1.jpg HTTP/1.1[0m" 304 -
+2025-09-10 13:57:08,876 - INFO - 127.0.0.1 - - [10/Sep/2025 13:57:08] "[36mGET /static/imagens/foto3.jpg HTTP/1.1[0m" 304 -
+2025-09-10 14:35:35,037 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-10 14:35:35,039 - INFO - Added job "init_scheduler.<locals>.<lambda>" to job store "default"
+2025-09-10 14:35:35,039 - INFO - Scheduler started
+2025-09-10 14:35:35,039 - INFO - Scheduler iniciado com sucesso.
+2025-09-10 14:35:35,060 - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.3.48:5000
+2025-09-10 14:35:35,060 - INFO - [33mPress CTRL+C to quit[0m
+2025-09-10 14:35:35,062 - INFO -  * Restarting with stat
+2025-09-10 14:35:38,679 - INFO - Adding job tentatively -- it will be properly scheduled when the scheduler starts
+2025-09-10 14:35:38,681 - INFO - Added job "init_scheduler.<locals>.<lambda>" to job store "default"
+2025-09-10 14:35:38,681 - INFO - Scheduler started
+2025-09-10 14:35:38,682 - INFO - Scheduler iniciado com sucesso.
+2025-09-10 14:35:38,692 - WARNING -  * Debugger is active!
+2025-09-10 14:35:38,698 - INFO -  * Debugger PIN: 891-280-794
+2025-09-10 14:35:38,867 - INFO - 127.0.0.1 - - [10/Sep/2025 14:35:38] "GET / HTTP/1.1" 200 -
+2025-09-10 14:35:38,979 - INFO - 127.0.0.1 - - [10/Sep/2025 14:35:38] "GET /static/login.css?v=1.3 HTTP/1.1" 200 -
+2025-09-10 14:35:38,993 - INFO - 127.0.0.1 - - [10/Sep/2025 14:35:38] "GET /static/imagens/logo-accerth-oficial.png HTTP/1.1" 200 -
+2025-09-10 14:35:39,195 - INFO - 127.0.0.1 - - [10/Sep/2025 14:35:39] "GET /static/imagens/foto1.jpg HTTP/1.1" 200 -
+2025-09-10 14:35:39,197 - INFO - 127.0.0.1 - - [10/Sep/2025 14:35:39] "GET /static/imagens/foto2.jpg HTTP/1.1" 200 -
+2025-09-10 14:35:39,201 - INFO - 127.0.0.1 - - [10/Sep/2025 14:35:39] "GET /static/imagens/foto3.jpg HTTP/1.1" 200 -
+2025-09-10 14:35:39,756 - INFO - 127.0.0.1 - - [10/Sep/2025 14:35:39] "GET /static/imagens/modelo-oficial-icon-accerth-removebg-preview%20(4).png HTTP/1.1" 200 -
+2025-09-10 14:40:19,253 - INFO - Tentativa de login: identifier=654, pin=5453, role=funcionario
+2025-09-10 14:40:19,264 - INFO - Funcionário encontrado: employer_code=654, name=Pedro Ivo Leal Gomes Pereira, role=funcionario
+2025-09-10 14:40:20,079 - INFO - Login bem-sucedido: employee_id=413, role=funcionario
+2025-09-10 14:40:20,090 - INFO - 127.0.0.1 - - [10/Sep/2025 14:40:20] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-09-10 14:40:20,102 - INFO - Acessando /home_funcionario para employee_id=413, role=funcionario
+2025-09-10 14:40:20,197 - INFO - 127.0.0.1 - - [10/Sep/2025 14:40:20] "GET /home_funcionario HTTP/1.1" 200 -
+2025-09-10 14:40:20,275 - INFO - 127.0.0.1 - - [10/Sep/2025 14:40:20] "GET /static/home_funcionario.css?v=1.7 HTTP/1.1" 200 -
+2025-09-10 14:40:20,532 - INFO - 127.0.0.1 - - [10/Sep/2025 14:40:20] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-10 14:40:20,533 - INFO - 127.0.0.1 - - [10/Sep/2025 14:40:20] "GET /static/uploads/employee_413_20250816021514.jpg HTTP/1.1" 200 -
+2025-09-10 14:43:35,429 - INFO - 127.0.0.1 - - [10/Sep/2025 14:43:35] "[32mGET /logout HTTP/1.1[0m" 302 -
+2025-09-10 14:43:35,682 - INFO - 127.0.0.1 - - [10/Sep/2025 14:43:35] "GET / HTTP/1.1" 200 -
+2025-09-10 14:43:35,714 - INFO - 127.0.0.1 - - [10/Sep/2025 14:43:35] "[36mGET /static/login.css?v=1.3 HTTP/1.1[0m" 304 -
+2025-09-10 14:43:36,027 - INFO - 127.0.0.1 - - [10/Sep/2025 14:43:36] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-10 14:43:36,040 - INFO - 127.0.0.1 - - [10/Sep/2025 14:43:36] "[36mGET /static/imagens/foto1.jpg HTTP/1.1[0m" 304 -
+2025-09-10 14:43:36,046 - INFO - 127.0.0.1 - - [10/Sep/2025 14:43:36] "[36mGET /static/imagens/foto3.jpg HTTP/1.1[0m" 304 -
+2025-09-10 14:43:36,057 - INFO - 127.0.0.1 - - [10/Sep/2025 14:43:36] "[36mGET /static/imagens/foto2.jpg HTTP/1.1[0m" 304 -
+2025-09-10 14:47:53,927 - INFO - Tentativa de login: identifier=654, pin=5453, role=funcionario
+2025-09-10 14:47:53,932 - INFO - Funcionário encontrado: employer_code=654, name=Pedro Ivo Leal Gomes Pereira, role=funcionario
+2025-09-10 14:47:55,033 - INFO - Login bem-sucedido: employee_id=413, role=funcionario
+2025-09-10 14:47:55,036 - INFO - 127.0.0.1 - - [10/Sep/2025 14:47:55] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-09-10 14:47:55,050 - INFO - Acessando /home_funcionario para employee_id=413, role=funcionario
+2025-09-10 14:47:55,060 - INFO - 127.0.0.1 - - [10/Sep/2025 14:47:55] "GET /home_funcionario HTTP/1.1" 200 -
+2025-09-10 14:47:55,114 - INFO - 127.0.0.1 - - [10/Sep/2025 14:47:55] "[36mGET /static/home_funcionario.css?v=1.7 HTTP/1.1[0m" 304 -
+2025-09-10 14:47:55,426 - INFO - 127.0.0.1 - - [10/Sep/2025 14:47:55] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-10 14:47:55,428 - INFO - 127.0.0.1 - - [10/Sep/2025 14:47:55] "[36mGET /static/uploads/employee_413_20250816021514.jpg HTTP/1.1[0m" 304 -
+2025-09-10 14:47:59,004 - INFO - 127.0.0.1 - - [10/Sep/2025 14:47:59] "[32mGET /logout HTTP/1.1[0m" 302 -
+2025-09-10 14:47:59,261 - INFO - 127.0.0.1 - - [10/Sep/2025 14:47:59] "GET / HTTP/1.1" 200 -
+2025-09-10 14:47:59,622 - INFO - 127.0.0.1 - - [10/Sep/2025 14:47:59] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-10 14:47:59,625 - INFO - 127.0.0.1 - - [10/Sep/2025 14:47:59] "[36mGET /static/imagens/foto1.jpg HTTP/1.1[0m" 304 -
+2025-09-10 14:47:59,643 - INFO - 127.0.0.1 - - [10/Sep/2025 14:47:59] "[36mGET /static/login.css?v=1.3 HTTP/1.1[0m" 304 -
+2025-09-10 14:47:59,669 - INFO - 127.0.0.1 - - [10/Sep/2025 14:47:59] "[36mGET /static/imagens/foto2.jpg HTTP/1.1[0m" 304 -
+2025-09-10 14:47:59,680 - INFO - 127.0.0.1 - - [10/Sep/2025 14:47:59] "[36mGET /static/imagens/foto3.jpg HTTP/1.1[0m" 304 -
+2025-09-10 14:48:19,114 - INFO - Tentativa de login: identifier=rh@accerth.com, pin=rh_acc2025, role=empregador
+2025-09-10 14:48:19,120 - INFO - Funcionário encontrado: employer_code=None, name=RH Accerth, role=empregador
+2025-09-10 14:48:19,833 - INFO - Login bem-sucedido: employee_id=523, role=empregador
+2025-09-10 14:48:19,839 - INFO - 127.0.0.1 - - [10/Sep/2025 14:48:19] "[32mPOST /login HTTP/1.1[0m" 302 -
+2025-09-10 14:48:20,362 - INFO - 127.0.0.1 - - [10/Sep/2025 14:48:20] "GET /home HTTP/1.1" 200 -
+2025-09-10 14:48:20,707 - INFO - 127.0.0.1 - - [10/Sep/2025 14:48:20] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-10 14:48:20,733 - INFO - 127.0.0.1 - - [10/Sep/2025 14:48:20] "GET /static/home.css?v=2.0 HTTP/1.1" 200 -
+2025-09-10 14:48:50,460 - INFO - 127.0.0.1 - - [10/Sep/2025 14:48:50] "GET /add_unit HTTP/1.1" 200 -
+2025-09-10 14:48:50,695 - INFO - 127.0.0.1 - - [10/Sep/2025 14:48:50] "GET /static/add_unit.css?v=2.0 HTTP/1.1" 200 -
+2025-09-10 14:48:50,811 - INFO - 127.0.0.1 - - [10/Sep/2025 14:48:50] "[35m[1mGET /get_units HTTP/1.1[0m" 500 -
+2025-09-10 14:48:51,088 - INFO - 127.0.0.1 - - [10/Sep/2025 14:48:51] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-10 14:49:10,124 - INFO - 127.0.0.1 - - [10/Sep/2025 14:49:10] "GET /add_employee HTTP/1.1" 200 -
+2025-09-10 14:49:10,291 - INFO - 127.0.0.1 - - [10/Sep/2025 14:49:10] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-10 14:49:10,333 - INFO - 127.0.0.1 - - [10/Sep/2025 14:49:10] "GET /static/add_employee.css?v=2.0 HTTP/1.1" 200 -
+2025-09-10 14:49:19,039 - INFO - 127.0.0.1 - - [10/Sep/2025 14:49:19] "GET /employees HTTP/1.1" 200 -
+2025-09-10 14:49:19,122 - INFO - 127.0.0.1 - - [10/Sep/2025 14:49:19] "GET /static/employees.css?v=2.0 HTTP/1.1" 200 -
+2025-09-10 14:49:19,373 - INFO - 127.0.0.1 - - [10/Sep/2025 14:49:19] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-10 14:49:22,537 - INFO - 127.0.0.1 - - [10/Sep/2025 14:49:22] "GET /system_users HTTP/1.1" 200 -
+2025-09-10 14:49:22,664 - INFO - 127.0.0.1 - - [10/Sep/2025 14:49:22] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-10 14:49:22,669 - INFO - 127.0.0.1 - - [10/Sep/2025 14:49:22] "GET /static/system_users.css?v=2.2 HTTP/1.1" 200 -
+2025-09-10 14:49:36,577 - INFO - 127.0.0.1 - - [10/Sep/2025 14:49:36] "GET /employer_reports HTTP/1.1" 200 -
+2025-09-10 14:49:36,767 - INFO - 127.0.0.1 - - [10/Sep/2025 14:49:36] "GET /static/employer_reports.css?v=1.4 HTTP/1.1" 200 -
+2025-09-10 14:49:36,934 - INFO - 127.0.0.1 - - [10/Sep/2025 14:49:36] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-10 14:49:38,725 - INFO - 127.0.0.1 - - [10/Sep/2025 14:49:38] "GET /signed_reports_empregador HTTP/1.1" 200 -
+2025-09-10 14:49:38,830 - INFO - 127.0.0.1 - - [10/Sep/2025 14:49:38] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-10 14:49:38,846 - INFO - 127.0.0.1 - - [10/Sep/2025 14:49:38] "GET /static/signed_reports_empregador.css?v=1.6 HTTP/1.1" 200 -
+2025-09-10 14:49:43,629 - INFO - 127.0.0.1 - - [10/Sep/2025 14:49:43] "GET /units HTTP/1.1" 200 -
+2025-09-10 14:49:43,865 - INFO - 127.0.0.1 - - [10/Sep/2025 14:49:43] "GET /static/units.css?v=1.4 HTTP/1.1" 200 -
+2025-09-10 14:49:43,988 - INFO - 127.0.0.1 - - [10/Sep/2025 14:49:43] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-10 14:49:45,586 - INFO - 127.0.0.1 - - [10/Sep/2025 14:49:45] "GET /signed_reports_empregador HTTP/1.1" 200 -
+2025-09-10 14:49:45,843 - INFO - 127.0.0.1 - - [10/Sep/2025 14:49:45] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-10 14:49:45,847 - INFO - 127.0.0.1 - - [10/Sep/2025 14:49:45] "[36mGET /static/signed_reports_empregador.css?v=1.6 HTTP/1.1[0m" 304 -
+2025-09-10 14:49:53,073 - INFO - 127.0.0.1 - - [10/Sep/2025 14:49:53] "GET /units HTTP/1.1" 200 -
+2025-09-10 14:49:53,358 - INFO - 127.0.0.1 - - [10/Sep/2025 14:49:53] "[36mGET /static/units.css?v=1.4 HTTP/1.1[0m" 304 -
+2025-09-10 14:49:53,407 - INFO - 127.0.0.1 - - [10/Sep/2025 14:49:53] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-10 14:52:49,759 - INFO - 127.0.0.1 - - [10/Sep/2025 14:52:49] "GET /add_unit HTTP/1.1" 200 -
+2025-09-10 14:52:50,040 - INFO - 127.0.0.1 - - [10/Sep/2025 14:52:50] "[36mGET /static/add_unit.css?v=2.0 HTTP/1.1[0m" 304 -
+2025-09-10 14:52:50,134 - INFO - 127.0.0.1 - - [10/Sep/2025 14:52:50] "[35m[1mGET /get_units HTTP/1.1[0m" 500 -
+2025-09-10 14:52:50,407 - INFO - 127.0.0.1 - - [10/Sep/2025 14:52:50] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-10 14:53:38,795 - INFO - 127.0.0.1 - - [10/Sep/2025 14:53:38] "[31m[1mPOST /delete_unit/49 HTTP/1.1[0m" 400 -
+2025-09-10 14:54:49,481 - INFO - 127.0.0.1 - - [10/Sep/2025 14:54:49] "[32mPOST /add_unit?unit_id=28 HTTP/1.1[0m" 302 -
+2025-09-10 14:54:49,494 - INFO - 127.0.0.1 - - [10/Sep/2025 14:54:49] "GET /add_unit HTTP/1.1" 200 -
+2025-09-10 14:54:49,687 - INFO - 127.0.0.1 - - [10/Sep/2025 14:54:49] "[36mGET /static/add_unit.css?v=2.0 HTTP/1.1[0m" 304 -
+2025-09-10 14:54:49,855 - INFO - 127.0.0.1 - - [10/Sep/2025 14:54:49] "[35m[1mGET /get_units HTTP/1.1[0m" 500 -
+2025-09-10 14:54:50,052 - INFO - 127.0.0.1 - - [10/Sep/2025 14:54:50] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-10 14:56:55,472 - INFO - 127.0.0.1 - - [10/Sep/2025 14:56:55] "[32mPOST /add_unit?unit_id=45 HTTP/1.1[0m" 302 -
+2025-09-10 14:56:55,506 - INFO - 127.0.0.1 - - [10/Sep/2025 14:56:55] "GET /add_unit HTTP/1.1" 200 -
+2025-09-10 14:56:55,709 - INFO - 127.0.0.1 - - [10/Sep/2025 14:56:55] "[36mGET /static/add_unit.css?v=2.0 HTTP/1.1[0m" 304 -
+2025-09-10 14:56:55,889 - INFO - 127.0.0.1 - - [10/Sep/2025 14:56:55] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-10 14:56:55,943 - INFO - 127.0.0.1 - - [10/Sep/2025 14:56:55] "[35m[1mGET /get_units HTTP/1.1[0m" 500 -
+2025-09-10 14:57:24,261 - INFO - 127.0.0.1 - - [10/Sep/2025 14:57:24] "[32mPOST /add_unit?unit_id=28 HTTP/1.1[0m" 302 -
+2025-09-10 14:57:24,585 - INFO - 127.0.0.1 - - [10/Sep/2025 14:57:24] "GET /add_unit HTTP/1.1" 200 -
+2025-09-10 14:57:24,931 - INFO - 127.0.0.1 - - [10/Sep/2025 14:57:24] "[36mGET /static/add_unit.css?v=2.0 HTTP/1.1[0m" 304 -
+2025-09-10 14:57:24,933 - INFO - 127.0.0.1 - - [10/Sep/2025 14:57:24] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-10 14:57:25,224 - INFO - 127.0.0.1 - - [10/Sep/2025 14:57:25] "[35m[1mGET /get_units HTTP/1.1[0m" 500 -
+2025-09-10 14:58:05,226 - INFO - 127.0.0.1 - - [10/Sep/2025 14:58:05] "[32mGET /logout HTTP/1.1[0m" 302 -
+2025-09-10 14:58:05,548 - INFO - 127.0.0.1 - - [10/Sep/2025 14:58:05] "GET / HTTP/1.1" 200 -
+2025-09-10 14:58:05,582 - INFO - 127.0.0.1 - - [10/Sep/2025 14:58:05] "[36mGET /static/login.css?v=1.3 HTTP/1.1[0m" 304 -
+2025-09-10 14:58:05,805 - INFO - 127.0.0.1 - - [10/Sep/2025 14:58:05] "[36mGET /static/imagens/logo-accerth-oficial.png HTTP/1.1[0m" 304 -
+2025-09-10 14:58:05,904 - INFO - 127.0.0.1 - - [10/Sep/2025 14:58:05] "[36mGET /static/imagens/foto1.jpg HTTP/1.1[0m" 304 -
+2025-09-10 14:58:05,908 - INFO - 127.0.0.1 - - [10/Sep/2025 14:58:05] "[36mGET /static/imagens/foto2.jpg HTTP/1.1[0m" 304 -
+2025-09-10 14:58:05,926 - INFO - 127.0.0.1 - - [10/Sep/2025 14:58:05] "[36mGET /static/imagens/foto3.jpg HTTP/1.1[0m" 304 -

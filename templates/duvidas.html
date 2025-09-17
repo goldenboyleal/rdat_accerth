@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Página de Dúvidas</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='imagens/modelo-oficial-icon-accerth-removebg-preview (4).png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='duvidas.css') }}?v=1.2">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap">
+</head>
+<body>
+    <!-- Top Bar -->
+    <header class="top-bar">
+        <div class="top-bar-content">
+            <img src="{{ url_for('static', filename='imagens/logo-accerth-oficial.png') }}" alt="Accerth Logo" class="top-bar-logo">
+            <h1>Página de Dúvidas</h1>
+            <a href="{{ url_for('home') }}" class="return-link" aria-label="Retornar para a Tela Inicial">Retornar para a Tela Inicial</a>
+        </div>
+    </header>
+    <!-- Hero Image with Gradient -->
+    <div class="hero-image">
+        <img src="/static/imagens/pexels-yankrukov-8867374.jpg" alt="Imagem de fundo da página de dúvidas">
+    </div>
+    <!-- Dúvidas Content -->
+    <section class="duvidas-content">
+        <p>Se você, como empregador, deseja implementar novas funcionalidades, ajustar processos ou personalizar o sistema RDAT para atender melhor às necessidades da sua empresa, nossa equipe de Desenvolvimento e TI está pronta para ajudar.</p>
+        <h2>Entre em contato conosco:</h2>
+        <p><strong>✉️ E-mail:</strong> suporteti@accerth.com</p>
+        <p><strong>☎️ Telefone/WhatsApp:</strong> (21) 97990-2654</p>
+        <p><strong>📍 Endereço:</strong> R. José Bonifácio, 1050 – Cachambi, Rio de Janeiro – RJ</p>
+    </section>
+    <!-- Notificações -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="notification {{ 'error' if category == 'error' else 'success' }}">
+                    <div class="notification-content">
+                        <span>{{ message }}</span>
+                        <button class="notification-close" onclick="this.parentElement.parentElement.remove()" aria-label="Fechar notificação">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="progress-bar"></div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.progress-bar').forEach(bar => {
+                bar.addEventListener('animationend', () => {
+                    bar.closest('.notification').remove();
+                });
+            });
+        });
+   

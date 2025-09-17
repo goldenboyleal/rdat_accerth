@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atividades</title>
+    <link rel="shortcut icon" href="{{ url_for('static', filename='imagens/modelo-oficial-icon-accerth-removebg-preview (4).png') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='activities.css') }}?v=2.5">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="{{ url_for('static', filename='imagens/logo-accerth-oficial.png') }}" alt="Accerth Logo" class="logo">
+            <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Alternar menu lateral">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <div class="sidebar-content">
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('home_funcionario') }}" class="{% if request.endpoint == 'home_funcionario' %}active{% endif %}" aria-label="Tela Inicial"><i class="fas fa-home"></i> Tela Inicial</a></li>
+                    <li><a href="{{ url_for('activities') }}" class="{% if request.endpoint == 'activities' %}active{% endif %}" aria-label="Atividades"><i class="fas fa-tasks"></i> Atividades</a></li>
+                    <li class="collapsible">
+                        <a href="#" onclick="toggleSubmenu(this); return false;" aria-label="Expandir menu de relatórios"><i class="fas fa-file-alt"></i> Relatórios <i class="fas fa-chevron-right arrow"></i></a>
+                        <ul class="submenu">
+                            <li><a href="{{ url_for('generate_report') }}" class="{% if request.endpoint == 'generate_report' %}active{% endif %}" aria-label="Gerar Relatório"><i class="fas fa-file-alt"></i> Gerar Relatório</a></li>
+                            <li><a href="{{ url_for('track_reports') }}" class="{% if request.endpoint == 'track_reports' %}active{% endif %}" aria-label="Acompanhar Relatórios"><i class="fas fa-search"></i> Acompanhar Relatórios</a></li>
+                            <li><a href="{{ url_for('signed_reports') }}" class="{% if request.endpoint == 'signed_reports' %}active{% endif %}" aria-label="Relatórios Assinados"><i class="fas fa-file-signature"></i> Relatórios Assinados</a></li>
+                        </ul>
+                    </li>
+                    <li><a href="{{ url_for('digital_signature') }}" class="{% if request.endpoint == 'digital_signature' %}active{% endif %}" aria-label="Assinatura Digital"><i class="fas fa-signature"></i> Assinatura Digital</a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="sidebar-footer">
+            <ul>
+                <li><a href="{{ url_for('faq') }}" class="footer-link" aria-label="Dúvidas"><i class="fas fa-question-circle"></i> Dúvidas?</a></li>
+            </ul>
+        </div>
+    </aside>
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header>
+            <div class="header-content">
+                <span>Bem-vindo, {{ employee_name }}!</span>
+                <div class="header-right">
+                    <a href="{{ url_for('logout') }}" aria-label="Sair do sistema">Sair</a>
+                </div>
+            </div>
+        </header>
+        <!-- Section -->
+        <section class="section">
+            <h2>Relatório de Atividade Diário</h2>
+            <div class="filters">
+                <div class="form-group">
+                    <label for="month">Mês</label>
+                    <select name="month" id="month" onchange="updateActivities()" aria-label="Selecionar mês">
+                        {% for i in range(1, 13) %}
+                            <option value="{{ i }}" {{ 'selected' if i == current_month }}>{{ '%02d' % i }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="year">Ano</label>
+                    <select name="year" id="year" onchange="updateActivities()" aria-label="Selecionar ano">
+                        {% for y in range(2020, 2026) %}
+                            <option value="{{ y }}" {{ 'selected' if y == current_year }}>{{ y }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Relatório Atual</label>
+                    <span class="report-number">Nº {{ report_number|default('N/A') }}</span>
+                </div>
+            </div>
+            <div class="activities-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Dia</th>
+                            <th>Dia da Semana</th>
+                            <th>Status</th>
+                            <th>Descrição da Atividade</th>
+                            <th>Ação</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for day in days_in_month %}
+                            <tr class="{{ 'weekend' if day.weekday in ['Sábado', 'Domingo'] }}">
+                                <td>{{ '%02d' % day.day }}</td>
+                                <td>{{ day.weekday }}</td>
+                                <td>
+                                    {% if status_dict[day.day] %}
+                                        <span class="status status-{{ status_dict[day.day]|lower|replace(' ', '-') }}">{{ status_dict[day.day] }}</span>
+                                    {% else %}
+                                        <span>-</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if day.weekday not in ['Sábado', 'Domingo'] %}
+                                        {% if status_dict[day.day] in ['Folga', 'Atestado'] %}
+                                            <span class="special-status special-status-{{ status_dict[day.day]|lower }}">{{ status_dict[day.day] }}</span>
+                                        {% else %}
+                                            <form method="POST" action="{{ url_for('add_single_activity') }}" class="activity-form" id="form-{{ day.day }}" onsubmit="return validateActivityForm({{ day.day }}, {{ current_month }}, {{ current_year }})">
+                                                <input type="hidden" name="day" value="{{ day.day }}">
+                                                <input type="hidden" name="month" value="{{ current_month }}">
+                                                <input type="hidden" name="year" value="{{ current_year }}">
+                                                <input type="hidden" name="action" id="action-{{ day.day }}" value="save">
+                                                <textarea name="description" maxlength="500" placeholder="Descreva a atividade" {{ 'disabled' if status_dict[day.day] == 'Concluído' or activities_is_edited.get(day.day, False) }} onkeydown="handleEnterKey(event, {{ day.day }})" aria-label="Descrição da atividade do dia {{ '%02d' % day.day }}">{{ activities[day.day].description if day.day in activities else '' }}</textarea>
+                                            </form>
+                                        {% endif %}
+                                    {% else %}
+                                        <span>Não preenchível</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if day.weekday not in ['Sábado', 'Domingo'] and status_dict[day.day] not in ['Folga', 'Atestado'] %}
+                                        <div class="action-buttons">
+                                            <button type="submit" form="form-{{ day.day }}" class="btn save-btn" {{ 'disabled' if status_dict[day.day] == 'Concluído' or activities_is_edited.get(day.day, False) }} onclick="setAction({{ day.day }}, 'save')" aria-label="Salvar atividade do dia {{ '%02d' % day.day }}"> <i class="fas fa-save"></i> Salvar</button>
+                                            {% if status_dict[day.day] == 'Concluído' %}
+                                                <button class="btn edit-btn" id="edit-btn-{{ day.day }}" {{ 'disabled' if activities_is_edited.get(day.day, False) }} onclick="toggleEditMode({{ day.day }})" aria-label="Editar atividade do dia {{ '%02d' % day.day }}"><i class="fas fa-edit"></i> Editar</button>
+                                            {% endif %}
+                                        </div>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="stats-container">
+                <div class="stat-box total-days">
+                    <h3>Total de Dias</h3>
+                    <p>{{ total_days }}</p>
+                </div>
+                <div class="stat-box completed-days">
+                    <h3>Dias Completos</h3>
+                    <p>{{ completed_days }}</p>
+                </div>
+                <div class="stat-box pending-days">
+                    <h3>Dias Pendentes</h3>
+                    <p>{{ pending_days }}</p>
+                </div>
+                <div class="stat-box missing-days">
+                    <h3>Dias em Falta</h3>
+                    <p>{{ missing_days }}</p>
+                </div>
+            </div>
+        </section>
+    </div>
+    <!-- Notificações -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="notification {{ 'error' if category == 'error' else 'success' }}">
+                    <div class="notification-content">
+                        <span>{{ message }}</span>
+                        <button class="notification-close" onclick="this.parentElement.parentElement.remove()" aria-label="Fechar notificação">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="progress-bar"></div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+        }
+
+        function toggleSubmenu(element) {
+            const submenu = element.nextElementSibling;
+            const arrow = element.querySelector('.arrow');
+            element.parentElement.classList.toggle('submenu-active');
+            submenu.style.maxHeight = submenu.style.maxHeight ? null : submenu.scrollHeight + 'px';
+            arrow.style.transform = submenu.style.maxHeight ? 'rotate(90deg)' : 'rotate(0deg)';
+        }
+
+        function updateActivities() {
+            const month = document.getElementById('month').value;
+            const year = document.getElementById('year').value;
+            window.location.href = `{{ url_for('activities') }}?month=${month}&year=${year}`;
+        }
+
+        function showNotification(message, type = 'error') {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.innerHTML = `
+                <div class="notification-content">
+                    <span>${message}</span>
+                    <button class="notification-close" onclick="this.parentElement.parentElement.remove()" aria-label="Fechar notificação">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="progress-bar"></div>
+            `;
+            document.body.appendChild(notification);
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        function validateActivityForm(day, month, year) {
+            const today = new Date();
+            const currentYear = today.getFullYear();
+            const currentMonth = today.getMonth() + 1; // Meses em JS são base 0
+            const currentDay = today.getDate();
+            const selectedDate = new Date(year, month - 1, day);
+
+            // Verificar se a data é futura
+            if (selectedDate > today) {
+                showNotification('Não é possível salvar atividades para datas futuras.');
+                return false;
+            }
+
+            return true; // Prosseguir com o envio do formulário
+        }
+
+        function setAction(day, action) {
+            document.getElementById(`action-${day}`).value = action;
+        }
+
+        function toggleEditMode(day) {
+            const editBtn = document.getElementById(`edit-btn-${day}`);
+            const textarea = document.querySelector(`#form-${day} textarea[name="description"]`);
+            const form = document.getElementById(`form-${day}`);
+
+            if (editBtn.textContent.includes('Editar')) {
+                // Entrar no modo de edição
+                textarea.removeAttribute('disabled');
+                textarea.focus();
+                editBtn.innerHTML = '<i class="fas fa-save"></i> Salvar Edição';
+                editBtn.classList.remove('edit-btn');
+                editBtn.classList.add('save-btn');
+                editBtn.setAttribute('aria-label', `Salvar edição da atividade do dia ${day.toString().padStart(2, '0')}`);
+            } else {
+                // Salvar a edição
+                setAction(day, 'edit');
+                form.submit();
+            }
+        }
+
+        function handleEnterKey(event, day) {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault(); // Impede a quebra de linha
+                const editBtn = document.getElementById(`edit-btn-${day}`);
+                if (editBtn && editBtn.textContent.includes('Salvar Edição')) {
+                    setAction(day, 'edit');
+                    document.getElementById(`form-${day}`).submit();
+                } else {
+                    setAction(day, 'save');
+                    document.getElementById(`form-${day}`).submit();
+                }
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('.collapsible.submenu-active').forEach(collapsible => {
+                const submenu = collapsible.querySelector('.submenu');
+                const arrow = collapsible.querySelector('.arrow');
+                submenu.style.maxHeight = submenu.scrollHeight + 'px';
+                arrow.style.transform = 'rotate(90deg)';
+            });
+
+            document.querySelectorAll('.progress-bar').forEach(bar => {
+                bar.addEventListener('animationend', () => {
+                    bar.closest('.notification').remove();
+                });
+            });
+        });
+    </script>
+</body>
+</html>

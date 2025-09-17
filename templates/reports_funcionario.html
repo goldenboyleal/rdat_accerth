@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatórios</title>
+    <link rel="shortcut icon" href="/static/imagens/modelo-oficial-icon-accerth-removebg-preview (4).png">
+    <link rel="stylesheet" href="{{ url_for('static', filename='reports_funcionario.css') }}?v=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap">
+</head>
+<body>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <img src="/static/imagens/logo-accerth-oficial.png" alt="Accerth Logo" class="logo">
+            <button class="sidebar-toggle" onclick="toggleSidebar()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+        <div class="sidebar-content">
+            <nav>
+                <ul>
+                    <li><a href="{{ url_for('activities') }}"><i class="fas fa-tasks"></i> Atividades</a></li>
+                    <li><a href="{{ url_for('reports_funcionario') }}" class="active"><i class="fas fa-file-alt"></i> Relatórios</a></li>
+                    <li><a href="{{ url_for('digital_signature') }}"><i class="fas fa-signature"></i> Assinatura Digital</a></li>
+                </ul>
+            </nav>
+            <div class="sidebar-divider"></div>
+            <div class="sidebar-footer">
+                <ul>
+                    <li><a href="{{ url_for('faq') }}" class="footer-link"><i class="fas fa-question-circle"></i> Dúvidas?</a></li>
+                </ul>
+            </div>
+        </div>
+    </aside>
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <header>
+            <div class="header-content">
+                <span>Bem-vindo, {{ employee_name }}!</span>
+                <a href="{{ url_for('logout') }}">Sair</a>
+            </div>
+        </header>
+        <!-- Section -->
+        <section class="section">
+            <h2>Relatórios</h2>
+            <div class="report-buttons">
+                <form id="report-form" method="POST" action="{{ url_for('reports_funcionario') }}">
+                    <input type="hidden" name="format" id="report-format">
+                    <button type="button" class="btn primary" onclick="submitReportForm('excel')"><i class="fas fa-file-excel"></i> Gerar Relatório em Excel</button>
+                    <button type="button" class="btn primary" onclick="submitReportForm('pdf')"><i class="fas fa-file-pdf"></i> Gerar Relatório em PDF</button>
+                </form>
+            </div>
+        </section>
+    </div>
+    <!-- Notificações -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="notification {{ 'error' if category == 'error' else 'success' }}">
+                    <div class="notification-content">
+                        <span>{{ message }}</span>
+                        <button class="notification-close" onclick="this.parentElement.parentElement.remove()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="progress-bar"></div>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <script>
+        function toggleSidebar() {
+            document.querySelector('.sidebar').classList.toggle('active');
+        }
+
+        function submitReportForm(format) {
+            document.getElementById('report-format').value = format;
+            document.getElementById('report-form').submit();
+        }
+
+        setTimeout(() => {
+            document.querySelectorAll('.notification').forEach(notification => {
+                notification.remove();
+            });
+        }, 5000);
+    </script>
+</body>
+</html>
