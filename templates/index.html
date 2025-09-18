@@ -23,7 +23,7 @@
     <div class="relative w-full h-screen overflow-hidden">
         <div class="carousel w-full h-full">
             <div class="carousel-item active">
-                <img src="https://via.placeholder.com/1920x1080?text=RDAT+Imagem" alt="RDAT" class="w-full h-full object-cover">
+                <img src="{{ url_for('static', filename='imagens/pexels-rdat.jpg') }}" alt="RDAT" class="w-full h-full object-cover">
                 <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40">
                     <div class="text-center text-white">
                         <h2 class="text-4xl md:text-5xl font-bold mb-4">RDAT</h2>
@@ -32,7 +32,7 @@
                 </div>
             </div>
             <div class="carousel-item">
-                <img src="https://via.placeholder.com/1920x1080?text=Accerth+Suporte+TI+Imagem" alt="Accerth Suporte TI" class="w-full h-full object-cover">
+                <img src="{{ url_for('static', filename='imagens/pexel-ti.jpg') }}" alt="Accerth Suporte TI Imagem" class="w-full h-full object-cover">
                 <div class="absolute inset-0 flex items-center justify-center bg-black bg-opacity-40">
                     <div class="text-center text-white">
                         <h2 class="text-4xl md:text-5xl font-bold mb-4">Accerth Suporte TI</h2>
