@@ -30,8 +30,9 @@ from sqlalchemy.exc import OperationalError, IntegrityError
 from time import time
 from hashlib import sha256
 from scheduler import init_scheduler
-from models import db, Employee, Unit, Report, Activity 
+from models import db, Employee, Unit, Report, Activity
 from zoneinfo import ZoneInfo
+from werkzeug.middleware.proxy_fix import ProxyFix
 
 # Configurar logging
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
@@ -49,6 +50,7 @@ WEEKDAYS_PT = {  # noqa: E701
 }
 
 app = Flask(__name__)
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_prefix=1)
 app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', os.urandom(32).hex())
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/rdat_db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
@@ -210,6 +212,11 @@ def import_employees_from_json(json_file_path):
             db.session.rollback()
             print(f"Erro ao importar colaboradores ou unidades: {str(e)}")
 
+@app.before_request
+def log_script_name():
+    print("SCRIPT_NAME recebido:", request.environ.get('SCRIPT_NAME'))
+    print("PATH_INFO recebido:", request.environ.get('PATH_INFO'))
+
 @app.route('/')
 def index():
     print(f"Verificando sessão em /index: {dict(session)}")
@@ -225,47 +232,58 @@ def index():
     print("Renderizando login.html")
     return render_template('login.html')
 
-@app.route('/login', methods=['POST'])
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    identifier = request.form['employer_code'].strip()
-    pin = request.form['pin'].strip()
-    role = request.form['role'].strip()
-    
-    # Mapear 'colaborador' do formulário para 'funcionario' no banco
-    if role == 'colaborador':
-        role = 'funcionario'
-    
-    logger.info(f"Tentativa de login: identifier={identifier}, pin={pin}, role={role}")
-    employee = None
-    if role == 'funcionario':
-        employee = Employee.query.filter_by(employer_code=identifier, role=role).first()
-    else:
-        employee = Employee.query.filter_by(email=identifier, role=role).first()
-    
-    if employee:
-        logger.info(f"Funcionário encontrado: employer_code={employee.employer_code}, name={employee.name}, role={employee.role}")
-        if check_password_hash(employee.pin, pin):
-            logger.info(f"Login bem-sucedido: employee_id={employee.id}, role={employee.role}")
-            session['employee_id'] = employee.id
-            session['employee_name'] = employee.name
-            session['role'] = employee.role
-            session['department'] = employee.department
-            session['unit'] = employee.unit if role in ['fiscal', 'preposto'] else None
-            if role == 'empregador':
-                return redirect(url_for('home'))
-            elif role == 'fiscal':
-                return redirect(url_for('home_fiscal'))
-            elif role == 'preposto':
-                return redirect(url_for('home_preposto'))
-            return redirect(url_for('home_funcionario'))
+    print("=== INÍCIO LOGIN ===")
+    print(f"REQUEST METHOD: {request.method}")
+    print(f"REQUEST FORM: {request.form}")
+
+    if request.method == 'POST':
+        identifier = request.form.get('employer_code', '').strip()
+        pin = request.form.get('pin', '').strip()
+        role_form = request.form.get('role', '').strip()
+
+        print(f"DEBUG FORM DATA: role={role_form}, employer_code={identifier}, pin={pin}")
+
+        # Mapeia 'colaborador' para 'funcionario'
+        role_db = 'funcionario' if role_form == 'colaborador' else role_form
+
+        logger.info(f"Tentativa de login: identifier={identifier}, role_form={role_form}, role_db={role_db}")
+
+        employee = None
+        if role_db == 'funcionario':
+            employee = Employee.query.filter_by(employer_code=identifier, role=role_db).first()
         else:
-            logger.error(f"PIN inválido para identifier={identifier}, role={role}")
+            employee = Employee.query.filter_by(email=identifier, role=role_db).first()
+
+        if employee:
+            print(f"DEBUG EMPLOYEE: id={employee.id}, name={employee.name}, role={employee.role}")
+            if check_password_hash(employee.pin, pin):
+                print("DEBUG LOGIN: PIN correto, salvando sessão...")
+                session['employee_id'] = employee.id
+                session['employee_name'] = employee.name
+                session['role'] = employee.role
+                session['department'] = employee.department
+                session['unit'] = employee.unit if employee.role in ['fiscal', 'preposto'] else None
+
+                # Redireciona para home específica
+                if employee.role == 'empregador':
+                    return redirect(url_for('home'))
+                elif employee.role == 'fiscal':
+                    return redirect(url_for('home_fiscal'))
+                elif employee.role == 'preposto':
+                    return redirect(url_for('home_preposto'))
+                return redirect(url_for('home_funcionario'))
+            else:
+                print("DEBUG LOGIN: PIN inválido!")
+                flash('E-mail/Código, PIN ou tipo de usuário inválido!', 'error')
+        else:
+            print("DEBUG LOGIN: Nenhum funcionário encontrado!")
             flash('E-mail/Código, PIN ou tipo de usuário inválido!', 'error')
-    else:
-        logger.error(f"Nenhum funcionário encontrado para identifier={identifier}, role={role}")
-        flash('E-mail/Código, PIN ou tipo de usuário inválido!', 'error')
-    
-    return redirect(url_for('index'))
+
+        return redirect(url_for('index'))
+
+    return render_template('login.html')
 
 @app.route('/home_funcionario', methods=['GET'])
 def home_funcionario():
@@ -273,23 +291,23 @@ def home_funcionario():
         logger.warning("Tentativa de acesso a /home_funcionario sem login")
         flash('Por favor, faça login.', 'error')
         return redirect(url_for('index'))
-    
+
     if session['role'] != 'funcionario':
         logger.warning(f"Usuário com role {session['role']} tentou acessar /home_funcionario")
         flash('Acesso não autorizado.', 'error')
         return redirect(url_for('index'))
-    
+
     logger.info(f"Acessando /home_funcionario para employee_id={session['employee_id']}, role={session['role']}")
-    
+
     employee = Employee.query.get(session['employee_id'])
     if not employee:
         logger.error("Erro: funcionário não encontrado")
         flash('Funcionário não encontrado.', 'error')
         return redirect(url_for('index'))
-    
+
     # Buscar informações da unidade
     unit = Unit.query.filter_by(name=employee.unit).first()
-    
+
     employee_name = employee.name
     employee_data = {
         'name': employee.name,
@@ -301,11 +319,11 @@ def home_funcionario():
         'field_fiscal': unit.field_fiscal if unit else ''
     }
     photo_url = employee.photo_url
-    
+
     return render_template('home_funcionario.html',
-                           employee_name=employee_name,
-                           employee_data=employee_data,
-                           photo_url=photo_url)
+                            employee_name=employee_name,
+                            employee_data=employee_data,
+                            photo_url=photo_url)
 
 @app.route('/save_supervisors', methods=['POST'])
 def save_supervisors():
@@ -313,19 +331,19 @@ def save_supervisors():
         print("Erro: acesso não autorizado para salvar supervisores")
         flash('Acesso não autorizado.', 'error')
         return redirect(url_for('index'))
-    
+
     employee = Employee.query.get(session['employee_id'])
     if not employee:
         print("Erro: funcionário não encontrado")
         flash('Funcionário não encontrado.', 'error')
         return redirect(url_for('home_funcionario'))
-    
+
     unit = Unit.query.filter_by(name=employee.unit).first()
     if not unit:
         print("Erro: unidade não encontrada")
         flash('Unidade não encontrada.', 'error')
         return redirect(url_for('home_funcionario'))
-    
+
     manager = request.form.get('manager', '').strip()
     fiscal = request.form.get('fiscal', '').strip()
     field_fiscal = request.form.get('field_fiscal', '').strip()
@@ -346,7 +364,7 @@ def save_supervisors():
         db.session.rollback()
         print(f"Erro ao salvar supervisores: {str(e)}")
         flash(f'Erro ao salvar supervisores: {str(e)}.', 'error')
-    
+
     return redirect(url_for('home_funcionario'))
 
 @app.route('/upload_photo', methods=['POST'])
@@ -359,26 +377,26 @@ def upload_photo():
         print("Erro: acesso não autorizado para upload de foto")
         flash('Acesso não autorizado.', 'error')
         return redirect(url_for('index'))
-    
+
     print(f"Upload de foto para employee_id: {session.get('employee_id')}")
-    
+
     employee = Employee.query.get(session['employee_id'])
     if not employee:
         print("Erro: funcionário não encontrado")
         flash('Funcionário não encontrado.', 'error')
         return redirect(url_for('home_funcionario'))
-    
+
     if 'photo' not in request.files:
         print("Erro: nenhuma foto selecionada")
         flash('Nenhuma foto selecionada.', 'error')
         return redirect(url_for('home_funcionario'))
-    
+
     file = request.files['photo']
     if file.filename == '':
         print("Erro: nenhuma foto selecionada")
         flash('Nenhuma foto selecionada.', 'error')
         return redirect(url_for('home_funcionario'))
-    
+
     if file:
         try:
             allowed_extensions = {'png', 'jpg', 'jpeg'}
@@ -386,7 +404,7 @@ def upload_photo():
                 print("Erro: extensão de arquivo não permitida")
                 flash('Apenas arquivos PNG, JPG ou JPEG são permitidos.', 'error')
                 return redirect(url_for('home_funcionario'))
-            
+
             filename = secure_filename(f"employee_{employee.id}_{datetime.now().strftime('%Y%m%d%H%M%S')}.{file.filename.rsplit('.', 1)[1].lower()}")
             file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             file.save(file_path)
@@ -398,7 +416,7 @@ def upload_photo():
             db.session.rollback()
             print(f"Erro ao salvar foto: {str(e)}")
             flash(f'Erro ao salvar foto: {str(e)}', 'error')
-    
+
     return redirect(url_for('home_funcionario'))
 
 @app.route('/logout', methods=['GET'])
@@ -421,13 +439,13 @@ def home():
         print("Erro: acesso não autorizado à tela inicial")
         flash('Acesso não autorizado.', 'error')
         return redirect(url_for('index'))
-    
+
     print(f"Acessando home para employee_id: {session.get('employee_id')}")
     employees = Employee.query.filter_by(role='funcionario').all()
     print(f"Funcionários encontrados: {len(employees)}")  # Depuração
     for emp in employees:
         print(f"Nome: {emp.name}, Código: {emp.employer_code}")
-    
+
     return render_template(
         'home.html',
         employee_name=session['employee_name'],
@@ -445,21 +463,21 @@ def employees():
         print("Erro: acesso não autorizado à lista de funcionários")
         flash('Acesso não autorizado.', 'error')
         return redirect(url_for('index'))
-    
+
     print(f"Acessando employees para employee_id: {session.get('employee_id')}")
     search_query = request.args.get('search', '').lower()
     employees = Employee.query.filter_by(role='funcionario')
-    
+
     if search_query:
         employees = employees.filter(
             (Employee.name.ilike(f'%{search_query}%')) |
             (Employee.employer_code.ilike(f'%{search_query}%')) |
             (Employee.unit.ilike(f'%{search_query}%'))
         )
-    
+
     employees = employees.order_by(Employee.name).all()
-    return render_template('employees.html', 
-                           employee_name=session['employee_name'], 
+    return render_template('employees.html',
+                           employee_name=session['employee_name'],
                            role=session['role'],
                            employees=employees,
                            search_query=search_query)
@@ -470,12 +488,12 @@ def delete_employee(employer_code):
         return jsonify({'success': False, 'message': 'Por favor, faça login.'}), 401
     if session['role'] != 'empregador':
         return jsonify({'success': False, 'message': 'Acesso não autorizado.'}), 403
-    
+
     try:
         employee = Employee.query.filter_by(employer_code=employer_code).first()
         if not employee:
             return jsonify({'success': False, 'message': 'Funcionário não encontrado.'}), 404
-        
+
         # Verificar se o funcionário tem relatórios associados (se aplicável)
         reports = Report.query.filter_by(employee_id=employee.id).count()
         if reports > 0:
@@ -483,7 +501,7 @@ def delete_employee(employer_code):
                 'success': False,
                 'message': 'Não é possível excluir o funcionário pois há relatórios associados.'
             }), 400
-        
+
         db.session.delete(employee)
         db.session.commit()
         return jsonify({'success': True, 'message': 'Funcionário excluído com sucesso.'})
@@ -653,12 +671,12 @@ def add_unit():
     if session['role'] != 'empregador':
         flash('Acesso não autorizado.', 'error')
         return redirect(url_for('index'))
-    
+
     unit_id = request.args.get('unit_id', type=int)
     unit = None
     if unit_id:
         unit = Unit.query.get_or_404(unit_id)
-    
+
     if request.method == 'POST':
         name = request.form.get('name')
         icj_contract = request.form.get('icj_contract') or None
@@ -666,11 +684,11 @@ def add_unit():
         fiscal = request.form.get('fiscal') or None
         field_fiscal = request.form.get('field_fiscal') or None
         preposto_email = request.form.get('preposto_email') or None
-        
+
         if not name:
             flash('O campo Unidade é obrigatório.', 'error')
             return redirect(url_for('add_unit', unit_id=unit_id) if unit_id else url_for('add_unit'))
-        
+
         try:
             if unit_id and unit:
                 # Editar unidade existente
@@ -700,7 +718,7 @@ def add_unit():
             db.session.rollback()
             flash(f'Erro ao salvar unidade: {str(e)}', 'error')
             return redirect(url_for('add_unit', unit_id=unit_id) if unit_id else url_for('add_unit'))
-    
+
     # Buscar todas as unidades para exibir na tabela
     units = Unit.query.all()
     return render_template('add_unit.html', employee_name=session['employee_name'], unit=unit, units=units)
@@ -712,7 +730,7 @@ def get_units():
         return jsonify({'success': False, 'message': 'Por favor, faça login.'}), 401
     if session['role'] != 'empregador':
         return jsonify({'success': False, 'message': 'Acesso não autorizado.'}), 403
-    
+
     units = Unit.query.all()
     units_data = [{
         'id': unit.id,
@@ -723,7 +741,7 @@ def get_units():
         'field_fiscal': unit.field_fiscal or 'N/A',
         'preposto_email': unit.preposto_email or 'N/A'
     } for unit in units]
-    
+
     print(f"Unidades retornadas: {units_data}")  # Log para depuração
     return jsonify({
         'success': True,
@@ -737,7 +755,7 @@ def delete_unit(unit_id):
         return jsonify({'success': False, 'message': 'Por favor, faça login.'}), 401
     if session['role'] != 'empregador':
         return jsonify({'success': False, 'message': 'Acesso não autorizado.'}), 403
-    
+
     try:
         unit = Unit.query.get_or_404(unit_id)
         # Verificar se a unidade tem funcionários associados
@@ -747,7 +765,7 @@ def delete_unit(unit_id):
                 'success': False,
                 'message': 'Não é possível excluir a unidade pois há funcionários associados.'
             }), 400
-        
+
         db.session.delete(unit)
         db.session.commit()
         return jsonify({'success': True, 'message': 'Unidade excluída com sucesso.'})
@@ -765,7 +783,7 @@ def units():
         print(f"Erro: acesso não autorizado à página de unidades. Papel atual: {session.get('role')}")
         flash('Acesso não autorizado.', 'error')
         return redirect(url_for('index'))
-    
+
     print(f"Acessando units para employee_id: {session.get('employee_id')}, role: {session.get('role')}")
     units = Unit.query.all()  # Lista todas as unidades cadastradas
     return render_template('units.html', employee_name=session['employee_name'], units=units)
@@ -804,7 +822,7 @@ def get_signed_reports_by_period():
 
     # Buscar todos os colaboradores da unidade com papel 'colaborador'
     employees = Employee.query.filter_by(unit=unit_name, role='colaborador').all()
-    
+
     # Buscar relatórios no período para a unidade, dos últimos 2 meses
     reports = Report.query.join(Employee).filter(
         Report.created_at.between(start_date, end_date),
@@ -967,7 +985,7 @@ def send_reports_to_fiscal():
 
     except Exception as e:
         logger.error(f"Erro ao enviar relatórios: {str(e)}")
-        return jsonify({'success': False, 'message': f'Erro ao enviar relatórios: {str(e)}'}), 500 
+        return jsonify({'success': False, 'message': f'Erro ao enviar relatórios: {str(e)}'}), 500
 
 @app.route('/set_employee_activity', methods=['POST'])
 def set_employee_activity():
@@ -975,34 +993,34 @@ def set_employee_activity():
         logger.warning(f"Tentativa de acesso a /set_employee_activity sem permissão: role={session.get('role')}")
         flash('Acesso não autorizado.', 'error')
         return redirect(url_for('index'))
-    
+
     employer_code = request.form.get('employer_code')
     activity_date = request.form.get('activity_date')
     type_ = request.form.get('status')  # Usar 'status' no formulário para compatibilidade
-    
+
     if not all([employer_code, activity_date, type_]):
         logger.warning("Campos obrigatórios não preenchidos em /set_employee_activity")
         flash('Todos os campos são obrigatórios.', 'error')
         return redirect(url_for('home'))
-    
+
     if type_ not in ['Folga', 'Atestado']:
         logger.warning(f"Tipo inválido: {type_}")
         flash('Tipo inválido.', 'error')
         return redirect(url_for('home'))
-    
+
     try:
         activity_date = datetime.strptime(activity_date, '%Y-%m-%d').date()
         if activity_date > date.today():
             logger.warning(f"Data futura não permitida: {activity_date}")
             flash('Não é possível definir atividades para datas futuras.', 'error')
             return redirect(url_for('home'))
-        
+
         employee = Employee.query.filter_by(employer_code=employer_code, role='funcionario').first()
         if not employee:
             logger.warning(f"Funcionário não encontrado: employer_code={employer_code}")
             flash('Funcionário não encontrado.', 'error')
             return redirect(url_for('home'))
-        
+
         activity = Activity.query.filter_by(employee_id=employee.id, date=activity_date).first()
         weekday_map = {
             0: 'Segunda-feira',
@@ -1014,7 +1032,7 @@ def set_employee_activity():
             6: 'Domingo'
         }
         weekday = weekday_map[activity_date.weekday()]
-        
+
         if activity:
             activity.type = type_
             activity.description = type_  # Usar o tipo como descrição para Folga/Atestado
@@ -1038,12 +1056,12 @@ def set_employee_activity():
                 end_datetime=None
             )
             db.session.add(activity)
-        
+
         db.session.commit()
         logger.info(f"Atividade alterada com sucesso: employer_code={employer_code}, date={activity_date}, type={type_}")
         flash(f"Atividade definida como {type_} para {employee.name} em {activity_date.strftime('%d/%m/%Y')}.", 'success')
         return redirect(url_for('home'))
-    
+
     except ValueError:
         logger.warning(f"Formato de data inválido: {activity_date}")
         flash('Formato de data inválido. Use AAAA-MM-DD.', 'error')
@@ -1287,9 +1305,9 @@ def add_activity():
         print("Erro: acesso não autorizado para adicionar atividades")
         flash('Acesso não autorizado.', 'error')
         return redirect(url_for('index'))
-    
+
     print(f"Adicionando atividade para employee_id: {session.get('employee_id')}")
-    
+
     month = int(request.form.get('month', datetime.now().month))
     year = int(request.form.get('year', datetime.now().year))
 
@@ -1333,9 +1351,9 @@ def add_single_activity():
         print("Erro: acesso não autorizado para adicionar atividade")
         flash('Acesso não autorizado.', 'error')
         return redirect(url_for('index'))  # Alterado de 'main.index' para 'index'
-    
+
     print(f"Adicionando/editando atividade única para employee_id: {session.get('employee_id')}")
-    
+
     day = int(request.form.get('day'))
     month = int(request.form.get('month'))
     year = int(request.form.get('year'))
@@ -1357,7 +1375,7 @@ def add_single_activity():
             db.extract('year', Activity.date) == year
         ).all()
         activities_dict = {activity.date.day: activity.description for activity in activities}
-        
+
         missing_days = []
         for d in range(1, min(day, today.day)):
             check_date = date(year, month, d)
@@ -1365,7 +1383,7 @@ def add_single_activity():
                 continue
             if d not in activities_dict or not activities_dict[d].strip():
                 missing_days.append(d)
-        
+
         if missing_days:
             flash(f'Você deve preencher as atividades dos dias {", ".join(f"{d:02d}/{month:02d}/{year}" for d in missing_days)} antes de salvar esta atividade.', 'error')
             return redirect(url_for('activities', month=month, year=year))
@@ -1407,7 +1425,7 @@ def add_single_activity():
             )
             db.session.add(new_activity)
             flash(f'Atividade para {activity_date.strftime("%d/%m/%Y")} salva com sucesso!', 'success')
-        
+
         db.session.commit()
     except Exception as e:
         db.session.rollback()
@@ -2187,9 +2205,9 @@ def track_reports():
         logger.error("Erro: acesso não autorizado para acompanhar relatórios")
         flash('Acesso não autorizado.', 'error')
         return redirect(url_for('index'))
-    
+
     logger.debug(f"Acessando track_reports para employee_id: {session.get('employee_id')}")
-    
+
     employee = Employee.query.get(session['employee_id'])
     if not employee:
         logger.error("Erro: funcionário não encontrado")
@@ -2203,7 +2221,7 @@ def track_reports():
         Report.employee_id == employee.id,
         Report.created_at >= two_months_ago
     ).order_by(Report.created_at.desc()).all()
-    
+
     return render_template('track_reports.html', employee_name=session['employee_name'], reports=reports)
 
 @app.route('/employer_reports', methods=['GET'])
@@ -2216,15 +2234,15 @@ def employer_reports():
         print("Erro: acesso não autorizado para acompanhar relatórios de empregador")
         flash('Acesso não autorizado.', 'error')
         return redirect(url_for('index'))
-    
+
     print(f"Acessando employer_reports para employee_id: {session.get('employee_id')}")
-    
+
     reports = db.session.query(Report, Employee).join(Employee, Report.employee_id == Employee.id).order_by(Report.created_at.desc()).all()
     units = sorted(set(employee.unit for employee in Employee.query.all() if employee.unit))
-    
-    return render_template('employer_reports.html', 
-                           employee_name=session['employee_name'], 
-                           role=session['role'], 
+
+    return render_template('employer_reports.html',
+                           employee_name=session['employee_name'],
+                           role=session['role'],
                            reports=reports,
                            units=units)
 
@@ -2234,20 +2252,20 @@ def download_report(report_id):
         print("Erro: employee_id não encontrado na sessão")
         flash('Por favor, faça login.', 'error')
         return redirect(url_for('index'))
-    
+
     print(f"Baixando relatório {report_id} para employee_id: {session.get('employee_id')}")
-    
+
     report = Report.query.get(report_id)
     if not report:
         print("Erro: relatório não encontrado")
         flash('Relatório não encontrado.', 'error')
         return redirect(url_for('track_reports' if session['role'] == 'colaborador' else 'employer_reports'))
-    
+
     if session['role'] == 'colaborador' and report.employee_id != session['employee_id']:
         print("Erro: colaborador tentando acessar relatório de outro funcionário")
         flash('Acesso não autorizado.', 'error')
         return redirect(url_for('track_reports'))
-    
+
     try:
         return send_file(
             report.file_path,
@@ -2266,13 +2284,13 @@ def validate_period():
         return jsonify({'status': 'error', 'message': 'Por favor, faça login.'}), 401
     if session['role'] != 'empregador':
         return jsonify({'status': 'error', 'message': 'Acesso não autorizado.'}), 403
-    
+
     print(f"Validando período para employee_id: {session.get('employee_id')}")
-    
+
     data = request.get_json()
     start_date_str = data.get('start_date')
     end_date_str = data.get('end_date')
-    
+
     try:
         start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
         end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
@@ -2283,7 +2301,7 @@ def validate_period():
 
     employees = Employee.query.filter_by(role='colaborador').all()
     summary = []
-    
+
     for employee in employees:
         current_date = start_date
         weekdays = 0
@@ -2291,17 +2309,17 @@ def validate_period():
             if current_date.strftime('%A') not in ['Saturday', 'Sunday']:
                 weekdays += 1
             current_date += timedelta(days=1)
-        
+
         activities = Activity.query.filter_by(employee_id=employee.id).filter(
             Activity.date >= start_date,
             Activity.date <= end_date
         ).count()
-        
+
         missing_days = weekdays - activities
-        
+
         summary.append(f"Funcionário: {employee.name}, Matrícula: {employee.employer_code or 'N/A'}, "
                        f"Dias Úteis: {weekdays}, Atividades Registradas: {activities}, Dias Faltantes: {missing_days}")
-    
+
     return jsonify({
         'status': 'success',
         'message': 'Validação concluída com sucesso!',
@@ -2314,9 +2332,9 @@ def generate_employer_report():
         return jsonify({'status': 'error', 'message': 'Por favor, faça login.'}), 401
     if session['role'] != 'empregador':
         return jsonify({'status': 'error', 'message': 'Acesso não autorizado.'}), 403
-    
+
     print(f"Gerando relatório consolidado para employee_id: {session.get('employee_id')}")
-    
+
     data = request.get_json()
     start_date_str = data.get('start_date')
     end_date_str = data.get('end_date')
@@ -2338,7 +2356,7 @@ def generate_employer_report():
             Activity.date >= start_date,
             Activity.date <= end_date
         ).all()
-        
+
         employee_data = {
             'employer_code': employee.employer_code or 'N/A',
             'name': employee.name,
@@ -2459,13 +2477,13 @@ def digital_signature():
         return redirect(url_for('index'))
 
     print(f"Acessando digital_signature para employee_id: {session.get('employee_id')}")
-    
+
     employee = Employee.query.get(session['employee_id'])
     if not employee:
         print("Erro: funcionário não encontrado")
         flash('Funcionário não encontrado.', 'error')
         return redirect(url_for('index'))
-    
+
     # Buscar apenas relatórios em PDF
     reports = Report.query.filter_by(employee_id=employee.id, format='PDF').order_by(Report.created_at.desc()).all()
     response = make_response(render_template('digital_signature.html', employee_name=session['employee_name'], reports=reports))
@@ -2531,9 +2549,9 @@ def signed_reports():
         logger.error("Erro: acesso não autorizado para relatórios assinados")
         flash('Acesso não autorizado.', 'error')
         return redirect(url_for('index'))
-    
+
     logger.debug(f"Acessando signed_reports para employee_id: {session.get('employee_id')}")
-    
+
     employee = Employee.query.get(session['employee_id'])
     if not employee:
         logger.error("Erro: funcionário não encontrado")
@@ -2548,7 +2566,7 @@ def signed_reports():
         Report.signature_status == 'Assinado',
         Report.created_at >= two_months_ago
     ).order_by(Report.created_at.desc()).all()
-    
+
     return render_template('signed_reports.html', employee_name=session['employee_name'], signed_reports=signed_reports)
 
 @app.route('/fiscal_signed_reports', methods=['GET'])
@@ -2659,7 +2677,7 @@ def download_individual_report():
     except Exception as e:
         print(f"Erro ao baixar relatório individual: {str(e)}")
         return jsonify({'status': 'error', 'message': f'Erro ao baixar relatório: {str(e)}'}), 500
-    
+
 @app.route('/download_batch_report', methods=['POST'])
 def download_batch_report():
     if 'employee_id' not in session or session['role'] != 'empregador':
@@ -2802,7 +2820,7 @@ def save_signed_pdf():
     except Exception as e:
         print(f"Erro ao salvar PDF: {str(e)}")
         return jsonify({'success': False, 'message': f'Erro ao salvar PDF: {str(e)}'})
-    
+
 @app.route('/save_fiscal_signed_pdf', methods=['POST'])
 def save_fiscal_signed_pdf():
     try:
@@ -2906,7 +2924,7 @@ def save_fiscal_signed_pdf():
     except Exception as e:
         print(f"Erro ao salvar PDF assinado pelo fiscal: {str(e)}")
         return jsonify({'success': False, 'message': f'Erro ao salvar PDF: {str(e)}'})
-    
+
 @app.route('/digital_signature_preposto', methods=['GET', 'POST'])
 def digital_signature_preposto():
     if 'employee_id' not in session or session['role'] != 'preposto':
@@ -3046,7 +3064,7 @@ def faq():
         print("Erro: acesso não autorizado à página de FAQ")
         flash('Acesso não autorizado.', 'error')
         return redirect(url_for('index'))
-    
+
     print(f"Acessando FAQ para employee_id: {session.get('employee_id')}")
     return render_template('faq.html', employee_name=session['employee_name'])
 
@@ -3060,7 +3078,7 @@ def duvidas():
         print("Erro: acesso não autorizado à página de Dúvidas")
         flash('Acesso não autorizado.', 'error')
         return redirect(url_for('index'))
-    
+
     print(f"Acessando Dúvidas para employee_id: {session.get('employee_id')}")
     return render_template('duvidas.html', employee_name=session['employee_name'])
 
@@ -3076,18 +3094,18 @@ def system_users():
         return redirect(url_for('index'))
 
     print(f"Acessando system_users para employee_id: {session.get('employee_id')}")
-    
+
     employers = Employee.query.filter_by(role='empregador').all()
     fiscals = Employee.query.filter_by(role='fiscal').all()
     prepostos = Employee.query.filter_by(role='preposto').all()
     units = Unit.query.all()
-    
-    return render_template('system_users.html', 
-                           employee_name=session['employee_name'], 
-                           role=session['role'], 
-                           employers=employers, 
+
+    return render_template('system_users.html',
+                           employee_name=session['employee_name'],
+                           role=session['role'],
+                           employers=employers,
                            fiscals=fiscals,
-                           prepostos=prepostos, 
+                           prepostos=prepostos,
                            units=units)
 
 @app.route('/add_system_user', methods=['POST'])
@@ -3393,7 +3411,7 @@ def home_preposto():
             db.extract('month', Activity.date) == month,
             db.extract('year', Activity.date) == year
         ).all()
-        
+
         # Criar dicionário de atividades
         activities_dict = {
             activity.date.day: {
@@ -3876,7 +3894,7 @@ def download_activities():
     output = StringIO()
     writer = csv.writer(output)
     writer.writerow(['Nome', 'Matrícula', 'Função', 'Dia', 'Dia da Semana', 'Status', 'Descrição', 'Tipo', 'Projeto', 'Local', 'Horas'])
-    
+
     _, last_day = calendar.monthrange(year, month)
     weekdays = ['Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado', 'Domingo']
     today = datetime.now().date()
