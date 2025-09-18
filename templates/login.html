@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
     <link rel="shortcut icon" href="{{ url_for('static', filename='imagens/modelo-oficial-icon-accerth-removebg-preview (4).png') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}?v=1.3">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap">
 </head>
 <body>
@@ -19,15 +19,19 @@
             <a href="/duvidas" class="top-link">Dúvidas</a>
         </div>
     </div>
+
     <div class="login-container">
         <!-- Login Section (30%) -->
         <div class="login-section">
             <img src="{{ url_for('static', filename='imagens/logo-accerth-oficial.png') }}" alt="Accerth Logo" class="logo">
+
             <div class="welcome-text">
                 <p class="welcome-title">Bem-vindo ao RDAT da Accerth!</p>
                 <p class="welcome-description">Seu registro diário de atividades, desenvolvido para garantir agilidade, transparência e eficiência no acompanhamento do seu trabalho.</p>
-                <p class="welcome-action">Selecione a opção que você deseja:</p>
+                <p class="welcome-action">Selecione o tipo de login e insira suas credenciais:</p>
             </div>
+
+            <!-- Exibir mensagens flash de erro ou sucesso -->
             {% with messages = get_flashed_messages(with_categories=true) %}
                 {% if messages %}
                     {% for category, message in messages %}
@@ -43,24 +47,40 @@
                     {% endfor %}
                 {% endif %}
             {% endwith %}
-            <form method="POST" action="/login">
+
+            <!-- FORM corrigido com url_for -->
+            <form method="POST" action="{{ url_for('login') }}">
+                <!-- Tipos de usuário -->
                 <div class="role-selection">
-                    <label><input type="radio" name="role" value="colaborador" checked onchange="updateInputLabel()"> Colaborador</label>
-                    <label><input type="radio" name="role" value="empregador" onchange="updateInputLabel()"> Empregador</label>
-                    <label><input type="radio" name="role" value="fiscal" onchange="updateInputLabel()"> Fiscal</label>
-                    <label><input type="radio" name="role" value="preposto" onchange="updateInputLabel()"> Preposto</label>
+                    <label>
+                        <input type="radio" name="role" value="colaborador" checked onchange="updateInputLabel()"> Colaborador
+                    </label>
+                    <label>
+                        <input type="radio" name="role" value="empregador" onchange="updateInputLabel()"> Empregador
+                    </label>
+                    <label>
+                        <input type="radio" name="role" value="fiscal" onchange="updateInputLabel()"> Fiscal
+                    </label>
+                    <label>
+                        <input type="radio" name="role" value="preposto" onchange="updateInputLabel()"> Preposto
+                    </label>
                 </div>
+
+                <!-- Campos dinâmicos -->
                 <div>
                     <label for="employer_code" id="input-label">Código do Empregador</label>
                     <input type="text" name="employer_code" id="employer_code" required placeholder="Digite o código do empregador">
                 </div>
+
                 <div>
                     <label for="pin" id="pin-label">PIN</label>
                     <input type="password" name="pin" id="pin" required placeholder="Digite seu PIN">
                 </div>
+
                 <button type="submit">Entrar</button>
             </form>
         </div>
+
         <!-- Carousel Section (70%) -->
         <div class="carousel-section">
             <div class="carousel">
@@ -72,38 +92,16 @@
             <button class="carousel-button next" onclick="nextSlide()">❯</button>
         </div>
     </div>
-    <script>
-        // Script para o carrossel
-        let currentSlide = 0;
-        const slides = document.querySelectorAll('.carousel-item');
-        
-        function showSlide(index) {
-            slides.forEach((slide, i) => {
-                slide.classList.toggle('active', i === index);
-                slide.style.transform = `translateX(${(i - index) * 100}%)`;
-            });
-        }
-        
-        function nextSlide() {
-            currentSlide = (currentSlide + 1) % slides.length;
-            showSlide(currentSlide);
-        }
-        
-        function prevSlide() {
-            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
-            showSlide(currentSlide);
-        }
-        
-        showSlide(currentSlide);
-        setInterval(nextSlide, 5000);
 
-        // Script para alternar rótulo e placeholder do campo de entrada
+    <script>
+        // Atualiza labels e placeholders dependendo do tipo de login
         function updateInputLabel() {
             const role = document.querySelector('input[name="role"]:checked').value;
             const label = document.getElementById('input-label');
             const input = document.getElementById('employer_code');
             const pinLabel = document.getElementById('pin-label');
             const pinInput = document.getElementById('pin');
+
             if (role === 'colaborador') {
                 label.textContent = 'Código do Empregador';
                 input.placeholder = 'Digite o código do empregador';
@@ -117,17 +115,32 @@
             }
         }
 
-        // Depuração da sessão
-        console.log('Sessão após acessar login:', {{ session | tojson | safe }});
+        // Script do carrossel
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.carousel-item');
 
-        // Fechar notificações após animação
-        document.addEventListener('DOMContentLoaded', () => {
-            document.querySelectorAll('.progress-bar').forEach(bar => {
-                bar.addEventListener('animationend', () => {
-                    bar.closest('.notification').remove();
-                });
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                slide.classList.toggle('active', i === index);
+                slide.style.transform = translateX(${(i - index) * 100}%);
             });
-        });
+        }
+
+        function nextSlide() {
+            currentSlide = (currentSlide + 1) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        function prevSlide() {
+            currentSlide = (currentSlide - 1 + slides.length) % slides.length;
+            showSlide(currentSlide);
+        }
+
+        showSlide(currentSlide);
+        setInterval(nextSlide, 5000);
+
+        // Inicializa labels corretos ao carregar a página
+        document.addEventListener('DOMContentLoaded', updateInputLabel);
     </script>
 </body>
 </html>
